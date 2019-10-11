@@ -33,6 +33,16 @@ pull-debian-stable-slim:
 csgo: gamesvr-csgo gamesvr-csgo-freeplay gamesvr-csgo-test gamesvr-csgo-warmod gamesvr-csgo-warmod-hasty gamesvr-csgo-warmod-overtime
 	@echo "fin"
 
+.PHONY: csgo-push
+csgo-push: csgo
+	@echo "fin"
+	docker push lacledeslan/gamesvr-csgo:latest
+	docker push lacledeslan/gamesvr-csgo-freeplay:latest
+	docker push lacledeslan/gamesvr-csgo-test:latest
+	docker push lacledeslan/gamesvr-csgo-warmod:latest
+	docker push lacledeslan/gamesvr-csgo-warmod:hasty
+	docker push lacledeslan/gamesvr-csgo-warmod:overtime
+
 .PHONY: gamesvr-csgo
 gamesvr-csgo: pull-srcds-builder pull-debian-stable-slim
 	$(call clone-or-pull,https://github.com/LacledesLAN/gamesvr-csgo,gamesvr-csgo)
