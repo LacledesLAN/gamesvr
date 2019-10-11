@@ -50,7 +50,6 @@ gamesvr-csgo-freeplay: ##########################gamesvr-csgo
 	@docker build ./repos/gamesvr-csgo-freeplay -f ./repos/gamesvr-csgo-freeplay/Dockerfile.linux -t lacledeslan/gamesvr-csgo-freeplay --no-cache --build-arg BUILDNODE=$env:computername;
 	@echo "> Running tests on lacledeslan/gamesvr-csgo-freeplay:latest"
 	@docker run -it --rm lacledeslan/gamesvr-csgo-freeplay:latest ./ll-tests/gamesvr-csgo-freeplay.sh;
-	@echo y | docker image prune > /dev/null 2>&1
 	@echo ""
 
 .PHONY: gamesvr-csgo-test
@@ -60,7 +59,6 @@ gamesvr-csgo-test: ##########################gamesvr-csgo
 	@docker build ./repos/gamesvr-csgo-test -f ./repos/gamesvr-csgo-test/Dockerfile.linux -t lacledeslan/gamesvr-csgo-test --no-cache --build-arg BUILDNODE=$env:computername;
 	@echo "> Running tests on lacledeslan/gamesvr-csgo-test:latest"
 	@docker run -it --rm lacledeslan/gamesvr-csgo-test:latest ./ll-tests/gamesvr-csgo-test.sh;
-	@echo y | docker image prune > /dev/null 2>&1
 	@echo ""
 
 .PHONY: gamesvr-csgo-warmod
@@ -70,7 +68,6 @@ gamesvr-csgo-warmod: ##########################gamesvr-csgo
 	@docker build ./repos/gamesvr-csgo-warmod -f ./repos/gamesvr-csgo-warmod/linux.Dockerfile -t lacledeslan/gamesvr-csgo-warmod:latest --no-cache --build-arg BUILDNODE=$env:computername;
 	@echo "> Running tests on lacledeslan/gamesvr-csgo-warmod:latest"
 	@docker run -it --rm lacledeslan/gamesvr-csgo-warmod:latest ./ll-tests/gamesvr-csgo-warmod.sh;
-	@echo y | docker image prune > /dev/null 2>&1
 	@echo ""
 
 .PHONY: gamesvr-csgo-warmod-hasty
@@ -79,7 +76,6 @@ gamesvr-csgo-warmod-hasty: gamesvr-csgo-warmod
 	@docker build ./repos/gamesvr-csgo-warmod -f ./repos/gamesvr-csgo-warmod/linux.hasty.Dockerfile -t lacledeslan/gamesvr-csgo-warmod:hasty --no-cache --build-arg BUILDNODE=$env:computername;
 	@echo "> Running tests on lacledeslan/gamesvr-csgo-warmod:hasty"
 	@docker run -it --rm lacledeslan/gamesvr-csgo-warmod:hasty ./ll-tests/gamesvr-csgo-warmod-hasty.sh;
-	@echo y | docker image prune > /dev/null 2>&1
 	@echo ""
 
 .PHONY: gamesvr-csgo-warmod-overtime
@@ -88,7 +84,6 @@ gamesvr-csgo-warmod-overtime: gamesvr-csgo-warmod
 	@docker build ./repos/gamesvr-csgo-warmod -f ./repos/gamesvr-csgo-warmod/linux.overtime.Dockerfile -t lacledeslan/gamesvr-csgo-warmod:overtime --no-cache --build-arg BUILDNODE=$env:computername;
 	@echo "> Running tests on lacledeslan/gamesvr-csgo-warmod:overtime"
 	@docker run -it --rm lacledeslan/gamesvr-csgo-warmod:overtime ./ll-tests/gamesvr-csgo-warmod-overtime.sh;
-	@echo y | docker image prune > /dev/null 2>&1
 	@echo ""
 
 .DEFAULT_GOAL := help
