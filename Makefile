@@ -29,6 +29,13 @@ pull-debian-stable-slim:
 	docker pull debian:stable-slim
 	@echo ""
 
+##    _____  _____  _____  ____
+##  / ____|/ ____|/ ____|/ __ \
+## | |    | (___ | |  __| |  | |
+## | |     \___ \| | |_ | |  | |
+## | |____ ____) | |__| | |__| |
+##  \_____|_____/ \_____|\____/
+
 .PHONY: csgo
 csgo: gamesvr-csgo gamesvr-csgo-freeplay gamesvr-csgo-test gamesvr-csgo-warmod gamesvr-csgo-warmod-hasty gamesvr-csgo-warmod-overtime
 	@echo "fin"
@@ -94,6 +101,51 @@ gamesvr-csgo-warmod-overtime: gamesvr-csgo-warmod
 	@docker build ./repos/gamesvr-csgo-warmod -f ./repos/gamesvr-csgo-warmod/linux.overtime.Dockerfile -t lacledeslan/gamesvr-csgo-warmod:overtime --no-cache --build-arg BUILDNODE=$env:computername;
 	@echo "> Running tests on lacledeslan/gamesvr-csgo-warmod:overtime"
 	@docker run -it --rm lacledeslan/gamesvr-csgo-warmod:overtime ./ll-tests/gamesvr-csgo-warmod-overtime.sh;
+	@echo ""
+
+##  __  __ _                            __ _
+## |  \/  (_)                          / _| |
+## | \  / |_ _ __   ___  ___ _ __ __ _| |_| |_
+## | |\/| | | '_ \ / _ \/ __| '__/ _` |  _| __|
+## | |  | | | | | |  __/ (__| | | (_| | | | |_
+## |_|  |_|_|_| |_|\___|\___|_|  \__,_|_|  \__|
+
+.PHONY: minecraft
+minecraft: gamesvr-minecarft gamesvr-minecarft-challenge1 gamesvr-minecarft-challenge2 gamesvr-minecarft-challenge3
+	@echo "fin"
+
+.PHONY: gamesvr-minecarft
+gamesvr-minecarft:
+	$(call clone-or-pull,https://github.com/LacledesLAN/gamesvr-minecraft,gamesvr-minecraft)
+	@echo "> Building Docker image lacledeslan/gamesvr-minecraft:latest"
+	@docker build ./repos/gamesvr-minecraft -f ./repos/gamesvr-minecraft/linux.Dockerfile -t lacledeslan/gamesvr-minecraft --no-cache --build-arg BUILDNODE=$env:computername;
+	@echo "> Running tests on lacledeslan/gamesvr-minecraft:latest"
+	@docker run -it --rm lacledeslan/gamesvr-minecraft ./ll-tests/gamesvr-minecraft.sh;
+	@echo y | docker image prune > /dev/null 2>&1
+	@echo ""
+
+.PHONY: gamesvr-minecarft-challenge1
+gamesvr-minecarft-challenge1:
+	$(call clone-or-pull,https://github.com/LacledesLAN/gamesvr-minecraft-challenge1,gamesvr-minecraft-challenge1)
+	@echo "> Building Docker image lacledeslan/gamesvr-minecraft-challenge1:latest"
+	@docker build ./repos/gamesvr-minecraft-challenge1 -f ./repos/gamesvr-minecraft-challenge1/linux.Dockerfile -t lacledeslan/gamesvr-minecraft-challenge1 --no-cache;
+	@echo y | docker image prune > /dev/null 2>&1
+	@echo ""
+
+.PHONY: gamesvr-minecarft-challenge2
+gamesvr-minecarft-challenge2:
+	$(call clone-or-pull,https://github.com/LacledesLAN/gamesvr-minecraft-challenge2,gamesvr-minecraft-challenge2)
+	@echo "> Building Docker image lacledeslan/gamesvr-minecraft-challenge2:latest"
+	@docker build ./repos/gamesvr-minecraft-challenge2 -f ./repos/gamesvr-minecraft-challenge2/linux.Dockerfile -t lacledeslan/gamesvr-minecraft-challenge2 --no-cache;
+	@echo y | docker image prune > /dev/null 2>&1
+	@echo ""
+
+.PHONY: gamesvr-minecarft-challenge3
+gamesvr-minecarft-challenge3:
+	$(call clone-or-pull,https://github.com/LacledesLAN/gamesvr-minecraft-challenge3,gamesvr-minecraft-challenge3)
+	@echo "> Building Docker image lacledeslan/gamesvr-minecraft-challenge3:latest"
+	@docker build ./repos/gamesvr-minecraft-challenge3 -f ./repos/gamesvr-minecraft-challenge3/linux.Dockerfile -t lacledeslan/gamesvr-minecraft-challenge3 --no-cache;
+	@echo y | docker image prune > /dev/null 3>&1
 	@echo ""
 
 .DEFAULT_GOAL := help
