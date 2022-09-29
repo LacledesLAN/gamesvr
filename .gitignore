@@ -1,0 +1,52 @@
+### Project Specific ###
+/repos/**
+!/repos/.gitkeep
+
+
+### Linux Cruft ###
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+
+### Mac OS Cruft ###
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+*.icloud
+
+
+### Visual Studio Code Cruft ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+.history/
+*.vsix
+.history
+.ionide
+.vscode/*.code-snippets
+*.code-workspace
+
+
+### Windows Cruft ###
+[Tt]humbs.db
+[Tt]humbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.lnk
