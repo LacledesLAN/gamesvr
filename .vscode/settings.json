@@ -1,9 +1,11 @@
 {
     "cSpell.words": [
+        "csgo",
         "gamesvr",
         "laclede",
         "laclede's",
-        "laclede’s"
+        "laclede’s",
+        "reindex"
     ],
     "files.exclude": {
         "**/.git": true,
