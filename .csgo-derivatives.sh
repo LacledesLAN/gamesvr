@@ -13,8 +13,8 @@ git_update "https://github.com/LacledesLAN/gamesvr-csgo-test" "./repos/gamesvr-c
 (cd ./repos/gamesvr-csgo-test && source ./build.sh)
 
 # Tourney
-#git_update "https://github.com/LacledesLAN/gamesvr-csgo-tourney" "./repos/gamesvr-csgo-tourney"
-#(cd ./repos/gamesvr-csgo-tourney && source ./build.sh)
+git_update "https://github.com/LacledesLAN/gamesvr-csgo-tourney" "./repos/gamesvr-csgo-tourney"
+(cd ./repos/gamesvr-csgo-tourney && source ./build.sh)
 
 # Warmod
 git_update "https://github.com/LacledesLAN/gamesvr-csgo-warmod" "./repos/gamesvr-csgo-warmod"

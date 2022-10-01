@@ -13,6 +13,7 @@ git_clone "https://github.com/LacledesLAN/gamesvr-blackmesa-freeplay" "./repos/g
 git_clone "https://github.com/LacledesLAN/gamesvr-csgo" "./repos/gamesvr-csgo"
 git_clone "https://github.com/LacledesLAN/gamesvr-csgo-freeplay" "./repos/gamesvr-csgo-freeplay"
 git_clone "https://github.com/LacledesLAN/gamesvr-csgo-test" "./repos/gamesvr-csgo-test"
+git_clone "https://github.com/LacledesLAN/gamesvr-csgo-tourney" "./repos/gamesvr-csgo-tourney"
 git_clone "https://github.com/LacledesLAN/gamesvr-csgo-warmod" "./repos/gamesvr-csgo-warmod"
 git_clone "https://github.com/LacledesLAN/gamesvr-cssource" "./repos/gamesvr-cssource"
 git_clone "https://github.com/LacledesLAN/gamesvr-cssource-freeplay" "./repos/gamesvr-cssource-freeplay"
