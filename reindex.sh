@@ -5,7 +5,7 @@ source "$( cd "${BASH_SOURCE[0]%/*}" && pwd )/bin/linux/git-funcs.sh"
 
 gfx_section_start "Reindexing LL Game Server Repos"
 
-# Game Servers
+# Game Server Repos
 git_clone "https://github.com/LacledesLAN/gamesvr-7daystodie" "./repos/gamesvr-7daystodie"
 git_clone "https://github.com/LacledesLAN/gamesvr-7daystodie-freeplay" "./repos/gamesvr-7daystodie-freeplay"
 git_clone "https://github.com/LacledesLAN/gamesvr-blackmesa" "./repos/gamesvr-blackmesa"
@@ -61,3 +61,9 @@ git_clone "https://github.com/LacledesLAN/amxmodx" "./repos/amxmodx"
 git_clone "https://github.com/LacledesLAN/sourcemod.linux" "./repos/sourcemod.linux"
 git_clone "https://github.com/LacledesLAN/sourcemod.windows" "./repos/sourcemod.windows"
 git_clone "https://github.com/LacledesLAN/sourcemod-configs" "./repos/sourcemod-configs"
+
+# Sources
+git_clone "https://github.com/alliedmodders/amxmodx" "./sources/alliedmodders-amxmodx"
+git_clone "https://github.com/alliedmodders/metamod-source" "./sources/alliedmodders-metamod-source"
+git_clone "https://github.com/alliedmodders/sourcemod" "./sources/alliedmodders-sourcemod"
+git_clone "https://github.com/splewis/get5" "./sources/splewis-get5"

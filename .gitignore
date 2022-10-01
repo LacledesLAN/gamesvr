@@ -1,6 +1,8 @@
 ### Project Specific ###
 /repos/**
 !/repos/.gitkeep
+/sources/**
+!/sources/.gitkeep
 
 
 ### Linux Cruft ###
