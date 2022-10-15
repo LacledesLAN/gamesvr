@@ -28,17 +28,5 @@ docker push lacledeslan/gamesvr-blackmesa-freeplay:latest
 # CSGO
 source ./csgo-full_update.sh
 
-
 #TF2
-docker build --rm ./repos/gamesvr-tf2 -f ./repos/gamesvr-tf2/linux.Dockerfile --no-cache --tag lacledeslan/gamesvr-tf2:base --tag lacledeslan/gamesvr-tf2:latest
-docker run -it --rm lacledeslan/gamesvr-tf2 ./ll-tests/gamesvr-tf2.sh;
-docker push lacledeslan/gamesvr-tf2:base
-docker push lacledeslan/gamesvr-tf2:latest
-
-docker build --rm ./repos/gamesvr-tf2-blindfrag -f ./repos/gamesvr-tf2-blindfrag/linux.Dockerfile --tag lacledeslan/gamesvr-tf2-blindfrag:latest
-docker run -it --rm lacledeslan/gamesvr-tf2-blindfrag ./ll-tests/gamesvr-tf2-blindfrag.sh;
-docker push lacledeslan/gamesvr-tf2-blindfrag:latest
-
-docker build --rm ./repos/gamesvr-tf2-freeplay -f ./repos/gamesvr-tf2-freeplay/linux.Dockerfile --tag lacledeslan/gamesvr-tf2-freeplay:latest
-docker run -it --rm lacledeslan/gamesvr-tf2-freeplay ./ll-tests/gamesvr-tf2-freeplay.sh;
-docker push lacledeslan/gamesvr-tf2-freeplay:latest
+source ./tf2-full_update.sh
