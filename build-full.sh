@@ -1,8 +1,18 @@
 #!/bin/bash
 
-docker pull lacledeslan/steamcmd;
-docker pull debian:buster-slim;
-docker pull debian:bullseye-slim;
+source "$( cd "${BASH_SOURCE[0]%/*}" && pwd )/bin/linux/gfx-funcs.sh"
+source "$( cd "${BASH_SOURCE[0]%/*}" && pwd )/bin/linux/git-funcs.sh"
+
+gfx_allthethings
+
+
+# Update repos
+source ./reindex.sh
+
+
+# Pull common base images
+source ./pull-base-images.sh
+
 
 # Blackmesa
 docker build --rm ./repos/gamesvr-blackmesa -f ./repos/gamesvr-blackmesa/linux.Dockerfile --no-cache --tag lacledeslan/gamesvr-blackmesa:base --tag lacledeslan/gamesvr-blackmesa:latest
@@ -16,21 +26,7 @@ docker push lacledeslan/gamesvr-blackmesa-freeplay:latest
 
 
 # CSGO
-docker build --rm ./repos/gamesvr-csgo -f ./repos/gamesvr-csgo/linux.Dockerfile --no-cache --tag lacledeslan/gamesvr-csgo:base --tag lacledeslan/gamesvr-csgo:latest
-docker run -it --rm lacledeslan/gamesvr-csgo ./ll-tests/gamesvr-csgo.sh;
-docker push lacledeslan/gamesvr-csgo:base
-docker push lacledeslan/gamesvr-csgo:latest
-
-
-docker build --rm ./repos/gamesvr-csgo-freeplay -f ./repos/gamesvr-csgo-freeplay/linux.Dockerfile --tag lacledeslan/gamesvr-csgo-freeplay:latest
-docker run --rm lacledeslan/gamesvr-csgo-freeplay ./ll-tests/gamesvr-csgo-freeplay.sh;
-docker push lacledeslan/gamesvr-csgo-freeplay:latest
-
-docker build --rm ./repos/gamesvr-csgo-test -f ./repos/gamesvr-csgo-test/linux.Dockerfile --tag lacledeslan/gamesvr-csgo-test:latest
-docker run -it --rm lacledeslan/gamesvr-csgo-test ./ll-tests/gamesvr-csgo-test.sh;
-docker push lacledeslan/gamesvr-csgo-test:latest
-
-# TODOs: tourney, warmod
+source ./csgo-full_update.sh
 
 
 #TF2
