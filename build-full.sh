@@ -14,6 +14,7 @@ source ./reindex.sh
 source ./pull-base-images.sh
 
 
+#########
 # Blackmesa
 docker build --rm ./repos/gamesvr-blackmesa -f ./repos/gamesvr-blackmesa/linux.Dockerfile --no-cache --tag lacledeslan/gamesvr-blackmesa:base --tag lacledeslan/gamesvr-blackmesa:latest
 docker run -it --rm lacledeslan/gamesvr-blackmesa ./ll-tests/gamesvr-blackmesa.sh;
@@ -25,8 +26,22 @@ docker run -it --rm lacledeslan/gamesvr-blackmesa-freeplay ./ll-tests/gamesvr-bl
 docker push lacledeslan/gamesvr-blackmesa-freeplay:latest
 
 
+#########
 # CSGO
 source ./csgo-full_update.sh
 
-#TF2
+
+#########
+# TF2
 source ./tf2-full_update.sh
+
+
+#########
+# TF2 Classic
+# gamesvr-tf2classic
+git_update "https://github.com/LacledesLAN/gamesvr-tf2classic.git" "./repos/gamesvr-tf2classic"
+(cd ./repos/gamesvr-tf2classic && source ./build.sh)
+
+# gamesvr-tf2classic-freeplay
+git_update "https://github.com/LacledesLAN/gamesvr-tf2classic-freeplay.git" "./repos/gamesvr-tf2classic-freeplay"
+(cd ./repos/gamesvr-tf2classic-freeplay && source ./build.sh)
