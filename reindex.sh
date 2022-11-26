@@ -20,6 +20,7 @@ git_clone "https://github.com/LacledesLAN/gamesvr-cssource-freeplay" "./repos/ga
 git_clone "https://github.com/LacledesLAN/gamesvr-dods" "./repos/gamesvr-dods"
 git_clone "https://github.com/LacledesLAN/gamesvr-dods-freeplay" "./repos/gamesvr-dods-freeplay"
 git_clone "https://github.com/LacledesLAN/gamesvr-factorio" "./repos/gamesvr-factorio"
+git_clone "https://github.com/LacledesLAN/gamesvr-fof" "./repos/gamesvr-fof"
 git_clone "https://github.com/LacledesLAN/gamesvr-garrysmod" "./repos/gamesvr-garrysmod"
 git_clone "https://github.com/LacledesLAN/gamesvr-gesource" "./repos/gamesvr-gesource"
 git_clone "https://github.com/LacledesLAN/gamesvr-gesource-freeplay" "./repos/gamesvr-gesource-freeplay"
