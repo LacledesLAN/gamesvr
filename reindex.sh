@@ -39,6 +39,7 @@ git_clone "https://github.com/LacledesLAN/gamesvr-minecraft" "./repos/gamesvr-mi
 git_clone "https://github.com/LacledesLAN/gamesvr-minecraft-challenge1" "./repos/gamesvr-minecraft-challenge1"
 git_clone "https://github.com/LacledesLAN/gamesvr-minecraft-challenge2" "./repos/gamesvr-minecraft-challenge2"
 git_clone "https://github.com/LacledesLAN/gamesvr-minecraft-challenge3" "./repos/gamesvr-minecraft-challenge3"
+git_clone "https://github.com/LacledesLAN/gamesvr-satisfactory" "./repos/gamesvr-satisfactory"
 git_clone "https://github.com/LacledesLAN/gamesvr-quake2" "./repos/gamesvr-quake2"
 git_clone "https://github.com/LacledesLAN/gamesvr-quake2-freeplay" "./repos/gamesvr-quake2-freeplay"
 git_clone "https://github.com/LacledesLAN/gamesvr-tf2" "./repos/gamesvr-tf2"
