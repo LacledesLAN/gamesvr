@@ -1,17 +1,15 @@
 #!/bin/bash
 
+################################################################################
+## git functions
+################################################################################
+
 # Verify that `git` is installed
 command -v git > /dev/null 2>&1 || { echo >&2 "Package 'git' required.  Aborting."; tput sgr0; exit 1; }
 
 if [ $? -ne 0 ]; then
     echo "ERROR: git command must be installed!" | tee -a "$GAMESVR_LOGFILE";
     exit 1;
-fi
-
-# Set logfile destination if it doesn't already exist
-if [ -z "$GAMESVR_LOGFILE" ]
-then
-    GAMESVR_LOGFILE="/dev/null"
 fi
 
 #=============================================================================================================
@@ -27,10 +25,10 @@ fi
 function git_clone() {
     # REPO_URL (Parameter $1)
     if [ -z "$1" ]; then
-        echo "ERROR: parameter #1 (repository URL) is required; cannot be zero length1" | tee -a "$GAMESVR_LOGFILE";
+        echo "ERROR: parameter #1 (repository URL) is required; cannot be zero length1";
         exit 1;
     elif [[ ! "$1" == *"://"* ]]; then
-        echo "ERROR: parameter #1 (repository URL) must contain protocol information!" | tee -a "$GAMESVR_LOGFILE";
+        echo "ERROR: parameter #1 (repository URL) must contain protocol information!";
         exit 1;
     else
         local REPO_URL="$1";
@@ -38,7 +36,7 @@ function git_clone() {
 
     # PATH_DESTINATION (Parameter $2)
     if [ -z "$1" ]; then
-        echo "ERROR: parameter #2 (destination path) is required; cannot be zero length1" | tee -a "$GAMESVR_LOGFILE";
+        echo "ERROR: parameter #2 (destination path) is required; cannot be zero length1";
         exit 123;
     else
         local PATH_DESTINATION;
@@ -57,7 +55,7 @@ function git_clone() {
             echo "[$2] - Cannot update - has uncommited changes!"
         else
             echo -n "[$2] - Updating repo: "
-            git -C "$PATH_DESTINATION" pull --recurse-submodules | tee -a "$GAMESVR_LOGFILE";
+            git -C "$PATH_DESTINATION" pull --recurse-submodules;
         fi
     else
         # PATH_DESTINATION doesn't exist
@@ -80,10 +78,10 @@ function git_clone() {
 function git_update() {
     # REPO_URL (Parameter $1)
     if [ -z "$1" ]; then
-        echo "ERROR: parameter #1 (repository URL) is required; cannot be zero length1" | tee -a "$GAMESVR_LOGFILE";
+        echo "ERROR: parameter #1 (repository URL) is required; cannot be zero length1";
         exit 1;
     elif [[ ! "$1" == *"://"* ]]; then
-        echo "ERROR: parameter #1 (repository URL) must contain protocol information!" | tee -a "$GAMESVR_LOGFILE";
+        echo "ERROR: parameter #1 (repository URL) must contain protocol information!";
         exit 1;
     else
         local REPO_URL="$1";
@@ -91,7 +89,7 @@ function git_update() {
 
     # PATH_DESTINATION (Parameter $2)
     if [ -z "$1" ]; then
-        echo "ERROR: parameter #2 (destination path) is required; cannot be zero length1" | tee -a "$GAMESVR_LOGFILE";
+        echo "ERROR: parameter #2 (destination path) is required; cannot be zero length1";
         exit 123;
     else
         local PATH_DESTINATION;
@@ -113,11 +111,54 @@ function git_update() {
         fi
 
         echo -n "[$2] - Updating repo: "
-        git -C "$PATH_DESTINATION" pull --recurse-submodules | tee -a "$GAMESVR_LOGFILE";
+        git -C "$PATH_DESTINATION" pull --recurse-submodules;
     else
         # PATH_DESTINATION doesn't exist
         echo -n "[$2] - Cloning repo..."
         git clone --recurse-submodules --quiet "$1" "$PATH_DESTINATION"
         echo "done."
     fi
+}
+
+
+################################################################################
+## user interface functions
+################################################################################
+
+# Set the terminal title
+# $1 The title to set
+function ui_title {
+   PROMPT_COMMAND="echo -ne \"\033]0;$1 (on $HOSTNAME)\007\""
+}
+
+# Display a inline header 1, used for breaking up script output
+# $1 (optional) The section title
+function ui_header1() {
+    echo -e "\n";
+
+    {
+        echo -e "\n";
+        printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' =;
+
+        if [[ -n $1 ]]; then
+            echo -e "$1";
+            printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' =;
+        fi
+    }
+}
+
+# Display a inline header 2, used for breaking up script output
+# $1 (optional) The section title
+function ui_header2() {
+    echo -e "\n";
+
+    {
+        echo -e "\n";
+
+        if [[ -n $1 ]]; then
+            echo -e "$1";
+        fi
+
+		printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -;
+    }
 }

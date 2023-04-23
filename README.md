@@ -4,18 +4,39 @@ This repo is for building out [Laclede's LAN Game
 Servers](https://github.com/LacledesLAN/README.1ST/tree/master/GameServers); particularly those that can't be built in
 CI/CD cloud offerings.
 
-## Build Scripts
+## `build.sh`
 
-| Script                   | Purpose                                                                                |
-| ------------------------ | -------------------------------------------------------------------------------------- |
-| `./csgo-delta_update.sh` | Update and push `gamesvr-csgo`, rebuild and push all other CSGO-related Docker images. |
-| `./csgo-full_update.sh`  | Rebuild and push all CSGO-related Docker images.                                       |
+> Used to build game servers that are too large to be built via Github Actions.
 
-## Utility Scripts
+```shell
+./build.sh
+```
 
-| Script         | Purpose                                  |
-| -------------- | ---------------------------------------- |
-| `./reindex.sh` | Download/update all LL game server repos |
+### Option Arguments
+
+| Argument      | Description |
+| :------------ | :- |
+| `--delta`     | Build deltas where possible (TODO: reason) |
+| `--skip-base` | Skips building "base" images. E.g. `gamesvr-X` will get skipped, but `gamesvr-X-**` will get built. |
+
+## Build Targets
+
+> Unless one or more build targets are supplied, all build targets will be chosen
+
+| Argument       | Description |
+| :------------- | :- |
+| `--blackmesa`  |  |
+| `--csgo`       |  |
+| `--tf2`        |  |
+| `--tf2classic` |  |
+
+## `offline.sh`
+
+> Use to download assets, so that they can be used offline.
+
+```shell
+./offline.sh
+```
 
 ## General Behaviors
 
