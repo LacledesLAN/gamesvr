@@ -12,4 +12,3 @@ git_clone "https://github.com/LacledesLAN/gamesvr-csgo" "./lacledeslan/gamesvr-c
 git_clone "https://github.com/LacledesLAN/gamesvr-csgo-freeplay" "./lacledeslan/gamesvr-csgo-freeplay"
 git_clone "https://github.com/LacledesLAN/gamesvr-csgo-test" "./lacledeslan/gamesvr-csgo-test"
 git_clone "https://github.com/LacledesLAN/gamesvr-csgo-tourney" "./lacledeslan/gamesvr-csgo-tourney"
-git_clone "https://github.com/LacledesLAN/gamesvr-csgo-warmod" "./lacledeslan/gamesvr-csgo-warmod"

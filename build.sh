@@ -256,10 +256,6 @@ build_targets_include 'csgo' && {
 		ui_header2 "Build gamesvr-csgo-tourney";
 		(cd ./repos/lacledeslan/gamesvr-csgo-tourney && source ./build.sh) || report_error "Build gamesvr-csgo-tourney";
 		report_build "Build gamesvr-csgo-tourney" "$?";
-
-		ui_header2 "Build gamesvr-csgo-warmod";
-		(cd ./repos/lacledeslan/gamesvr-csgo-warmod && source ./build.sh) || report_error "Build gamesvr-csgo-warmod";
-		report_build "gamesvr-csgo-warmod" "$?";
 	fi;
 }
 
