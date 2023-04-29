@@ -209,14 +209,26 @@ build_targets_include 'blackmesa' && {
 	ui_header2 "Fetching LL Blackmesa repos";
 	(cd ./repos/ && source ./reindex-blackmesa.sh) || fail_error "Fetch CSGO repos";
 
-	#docker build --rm ./repos/lacledeslan/gamesvr-blackmesa -f ./repos/lacledeslan/gamesvr-blackmesa/linux.Dockerfile --no-cache --tag lacledeslan/gamesvr-blackmesa:base --tag lacledeslan/gamesvr-blackmesa:latest
-	#docker run -it --rm lacledeslan/gamesvr-blackmesa ./ll-tests/gamesvr-blackmesa.sh;
-	#docker push lacledeslan/gamesvr-blackmesa:base
-	#docker push lacledeslan/gamesvr-blackmesa:latest
+	# base image
+	if [ "$option_skip_base" != 'true' ]; then
+		ui_header2 "Build gamesvr-blackmesa";
+		if [ "$option_delta_updates" = 'true' ]; then
+			(cd ./repos/lacledeslan/gamesvr-blackmesa && source ./build.sh --delta);
+			report_build "gamesvr-blackmesa" "$?";
+		else
+			(cd ./repos/lacledeslan/gamesvr-blackmesa && source ./build.sh);
+			report_build "gamesvr-blackmesa" "$?";
+		fi;
+	fi;
 
-	#docker build --rm ./repos/lacledeslan/gamesvr-blackmesa-freeplay -f ./repos/lacledeslan/gamesvr-blackmesa-freeplay/linux.Dockerfile --tag lacledeslan/gamesvr-blackmesa-freeplay:latest
-	#docker run -it --rm lacledeslan/gamesvr-blackmesa-freeplay ./ll-tests/gamesvr-blackmesa-freeplay.sh;
-	#docker push lacledeslan/gamesvr-blackmesa-freeplay:latest
+		# derivative images
+	if builds_failed_includes 'gamesvr-blackmesa'; then
+		builds_skipped_add "gamesvr-blackmesa-freeplay"
+	else
+		ui_header2 "Build gamesvr-blackmesa-freeplay";
+		(cd ./repos/lacledeslan/gamesvr-blackmesa-freeplay && source ./build.sh) || report_error "Build gamesvr-blackmesa-freeplay";
+		report_build "gamesvr-blackmesa-freeplay" "$?";
+	fi;
 }
 
 ## CSGO
