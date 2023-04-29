@@ -269,10 +269,10 @@ build_targets_include 'tf2' && {
 	if [ "$option_skip_base" != 'true' ]; then
 		ui_header2 "Build gamesvr-tf2";
 		if [ "$option_delta_updates" = 'true' ]; then
-			(cd ./repos/lacledeslan/gamesvr-tf2 && source ./build-delta.sh)
+			(cd ./repos/lacledeslan/gamesvr-tf2 && source ./build.sh --delta)
 			report_build "gamesvr-tf2" "$?";
 		else
-			(cd ./repos/lacledeslan/gamesvr-tf2 && source ./build-full.sh)
+			(cd ./repos/lacledeslan/gamesvr-tf2 && source ./build.sh)
 			report_build "gamesvr-tf2" "$?";
 		fi;
 	fi;
