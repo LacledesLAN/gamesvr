@@ -42,7 +42,7 @@ do
 		--fast-fail)
 			option_fast_fail=true;
 			;;
-		--skip-base)
+		--no-base|--skip-base)
 			option_skip_base=true;
 			;;
 		# build targets

@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e;
+set -u;
 
+source "../bin/linux/funcs.sh"
 #
 # Fetch all repos used by Lacledes LAN dedicated gameservers
 #
@@ -50,6 +52,7 @@ git_clone "https://github.com/LacledesLAN/gamesvr-warsow-freeplay" "./lacledesla
 # LL Documentation & Utility Repos
 git_clone "https://github.com/LacledesLAN/get5-cli" "./lacledeslan/get5-cli"
 git_clone "https://github.com/LacledesLAN/README.1ST" "./lacledeslan/README.1ST"
+git_clone "https://github.com/LacledesLAN/ReferenceLogs" "./lacledeslan/ReferenceLogs"
 git_clone "https://github.com/LacledesLAN/SteamCMD" "./lacledeslan/SteamCMD"
 
 # LL Dependency Mirrors

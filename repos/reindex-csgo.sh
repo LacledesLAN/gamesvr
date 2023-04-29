@@ -1,5 +1,8 @@
 #!/bin/bash
 set -e;
+set -u;
+
+source "../bin/linux/funcs.sh"
 
 #
 # Fetch all Laclede's LAN repos used by CSGO dedicated servers
