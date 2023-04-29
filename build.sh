@@ -308,10 +308,17 @@ build_targets_include 'tf2classic' && {
 	ui_header2 "Fetching LL TF2 Classic repos";
 	(cd ./repos/ && source ./reindex-tf2classic.sh)  || fail_error "Fetch TF2 Classic repos";
 
-	#(cd ./repos/lacledeslan/gamesvr-tf2classic && source ./build.sh)
+	ui_header2 "Build gamesvr-tf2classic";
+	(cd ./repos/lacledeslan/gamesvr-tf2classic && source ./build.sh)
+	report_build "gamesvr-tf2" "$?";
 
-	# gamesvr-tf2classic-freeplay
-	#(cd ./repos/lacledeslan/gamesvr-tf2classic-freeplay && source ./build.sh)
+	if builds_failed_includes "gamesvr-tf2classic"; then
+		builds_skipped_add "gamesvr-tf2classic-freeplay"
+	else
+		ui_header2 "Build gamesvr-tf2classic-freeplay";
+		(cd ./repos/lacledeslan/gamesvr-tf2classic-freeplay && source ./build.sh)
+		report_build "gamesvr-tf2classic-freeplay" "$?";
+	fi;
 }
 
 
