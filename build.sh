@@ -230,10 +230,10 @@ build_targets_include 'csgo' && {
 	if [ "$option_skip_base" != 'true' ]; then
 		ui_header2 "Build gamesvr-csgo";
 		if [ "$option_delta_updates" = 'true' ]; then
-			(cd ./repos/lacledeslan/gamesvr-csgo && source ./build-delta.sh);
+			(cd ./repos/lacledeslan/gamesvr-csgo && source ./build.sh --delta);
 			report_build "gamesvr-csgo" "$?";
 		else
-			(cd ./repos/lacledeslan/gamesvr-csgo && source ./build-full.sh);
+			(cd ./repos/lacledeslan/gamesvr-csgo && source ./build.sh);
 			report_build "gamesvr-csgo" "$?";
 		fi;
 	fi;
