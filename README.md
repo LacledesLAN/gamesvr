@@ -6,7 +6,7 @@ CI/CD cloud offerings.
 
 ## `build.sh`
 
-> Used to build game servers that are too large to be built via Github Actions.
+Builds Laclede's LAN game server that are not built via Github actions.
 
 ```shell
 ./build.sh
@@ -16,8 +16,8 @@ CI/CD cloud offerings.
 
 | Argument      | Description |
 | :------------ | :- |
-| `--delta`     | Build deltas where possible (TODO: reason) |
-| `--skip-base` | Skips building "base" images. E.g. `gamesvr-X` will get skipped, but `gamesvr-X-**` will get built. |
+| `--delta`     | Build 'base' images, using delta layers, when possible. Use when registry bandwidth is a concern. |
+| `--skip-base` | Skips building 'base' images, but builds all 'derived' images. |
 
 ## Build Targets
 
@@ -32,7 +32,7 @@ CI/CD cloud offerings.
 
 ## `offline.sh`
 
-> Use to download assets, so that they can be used offline.
+Download Laclede's LAN game server assets, so that they can be used offline.
 
 ```shell
 ./offline.sh
