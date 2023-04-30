@@ -295,7 +295,7 @@ build_targets_include 'tf2' && {
 	else
 		# TODO: Blind Frag
 
-		ui_header2 "Build gamesvr-tf2";
+		ui_header2 "Build gamesvr-tf2-freeplay";
 		(cd ./repos/lacledeslan/gamesvr-tf2-freeplay && source ./build.sh)
 		report_build "gamesvr-tf2-freeplay" "$?";
 	fi;
