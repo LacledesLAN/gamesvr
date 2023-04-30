@@ -330,21 +330,22 @@ build_targets_include 'tf2classic' && {
 
 ui_header1 "Results for \"$LL_GAMESVR_BLD_COMMAND\"";
 
-echo -e "\nScript completed in $(($(date +%s) - "$LL_GAMESVR_BLD_START_TIME")) seconds.\n"
+echo -e "\nScript version: $(git rev-parse --short HEAD)";
+echo -e "Script completed in $(($(date +%s) - "$LL_GAMESVR_BLD_START_TIME")) seconds.\n";
 
 if (( ${#builds_completed[@]} )); then
-	printf -v joined '%s, ' "${builds_completed[@]}"
-	echo -e "Successful builds: ${joined%,}"
+	printf -v joined '%s, ' "${builds_completed[@]}";
+	echo -e "Successful builds: ${joined%,}";
 fi
 
 if (( ${#builds_failed[@]} )); then
-	printf -v joined '%s, ' "${builds_failed[@]}"
-	echo -e "Failed builds: ${joined%,}"
+	printf -v joined '%s, ' "${builds_failed[@]}";
+	echo -e "Failed builds: ${joined%,}";
 fi
 
 if (( ${#builds_aborted[@]} )); then
-printf -v joined '%s, ' "${builds_aborted[@]}"
-	echo -e "Aborted builds: ${joined%,}"
+printf -v joined '%s, ' "${builds_aborted[@]}";
+	echo -e "Aborted builds: ${joined%,}";
 fi
 
 echo -e "\n\n";

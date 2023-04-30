@@ -23,12 +23,12 @@ CI/CD cloud offerings.
 
 > Unless one or more build targets are supplied, all build targets will be chosen
 
-| Argument       | Description |
-| :------------- | :- |
-| `--blackmesa`  |  |
-| `--csgo`       |  |
-| `--tf2`        |  |
-| `--tf2classic` |  |
+| Argument       | Base Image           | Derived Images                   |
+| :------------- | :------------------- | :------------------------------- |
+| `--blackmesa`  | `gamesvr-blackmesa`  | `-freeplay`                      |
+| `--csgo`       | `gamesvr-csgo`       | `-freeplay`, `-test`, `-tourney` |
+| `--tf2`        | `gamesvr-tf2`        | `-blindfrag`, `-freeplay`        |
+| `--tf2classic` | `gamesvr-tf2classic` | `-freeplay`                      |
 
 ## `offline.sh`
 
