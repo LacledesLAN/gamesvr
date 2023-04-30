@@ -8,8 +8,8 @@
 
 set -u;
 source "$( cd "${BASH_SOURCE[0]%/*}" && pwd )/bin/linux/funcs.sh"
-LL_GAMESVR_BLD_COMMAND="$0 $*";			# The command line used to run this script.
-LL_GAMESVR_BLD_START_TIME="$(date +%s);"	# The time this script started (seconds since epoch).
+LL_GAMESVR_BLD_COMMAND="$0 $*";				# The command line used to run this script.
+LL_GAMESVR_BLD_START_TIME=$(date +%s);		# The time this script started (seconds since epoch).
 
 
 ####################################################################################################
@@ -23,9 +23,10 @@ option_fast_fail=false;		# Exit this script the first time something goes wrong?
 option_skip_base=false;		# Skip base builds?
 
 # Script vars
+builds_aborted=()			# List of builds that were aborted, because of a problem.
 builds_completed=()			# List of builds that completed successfully.
 builds_failed=()			# List of builds that failed.
-builds_skipped=()			# List of builds that were unintentionally skipped.
+
 
 # Parse command line options
 while [ "$#" -gt 0 ]
@@ -100,11 +101,11 @@ function build_targets_include {
 	return 1;
 }
 
-function builds_skipped_add {
+function builds_aborted_add {
 	ui_header2 "$1";
 
 	echo -e "Skipped.\n";
-	builds_skipped+=("$1")
+	builds_aborted+=("$1")
 }
 
 # Reports an failure and immediately exits the script.
@@ -156,7 +157,7 @@ fi;
 ####################################################################################################
 
 # If no build targets are specified, build all possible targets
-if [ ${#option_build_targets[@]} -eq 0 ]; then
+if [ ${#option_build_targets[@]} -eq 0 ] && [ "$option_skip_base" != 'true' ]; then
     echo -ne "\n";
 	echo -ne "      BUILD ALL THE TARGETS!\n"; sleep 0.01;
     echo -ne "  ─────────────────────────────▄██▄ \n";
@@ -207,26 +208,26 @@ build_targets_include 'blackmesa' && {
 	ui_header1 "Blackmesa";
 
 	ui_header2 "Fetching LL Blackmesa repos";
-	(cd ./repos/ && source ./reindex-blackmesa.sh) || fail_error "Fetch CSGO repos";
+	(cd ./repos/ && ./reindex-blackmesa.sh) || fail_error "Fetch CSGO repos";
 
 	# base image
 	if [ "$option_skip_base" != 'true' ]; then
 		ui_header2 "Build gamesvr-blackmesa";
 		if [ "$option_delta_updates" = 'true' ]; then
-			(cd ./repos/lacledeslan/gamesvr-blackmesa && source ./build.sh --delta);
+			(cd ./repos/lacledeslan/gamesvr-blackmesa && ./build.sh --delta);
 			report_build "gamesvr-blackmesa" "$?";
 		else
-			(cd ./repos/lacledeslan/gamesvr-blackmesa && source ./build.sh);
+			(cd ./repos/lacledeslan/gamesvr-blackmesa && ./build.sh);
 			report_build "gamesvr-blackmesa" "$?";
 		fi;
 	fi;
 
 		# derivative images
 	if builds_failed_includes 'gamesvr-blackmesa'; then
-		builds_skipped_add "gamesvr-blackmesa-freeplay"
+		builds_aborted_add "gamesvr-blackmesa-freeplay";
 	else
 		ui_header2 "Build gamesvr-blackmesa-freeplay";
-		(cd ./repos/lacledeslan/gamesvr-blackmesa-freeplay && source ./build.sh) || report_error "Build gamesvr-blackmesa-freeplay";
+		(cd ./repos/lacledeslan/gamesvr-blackmesa-freeplay && ./build.sh);
 		report_build "gamesvr-blackmesa-freeplay" "$?";
 	fi;
 }
@@ -236,37 +237,36 @@ build_targets_include 'csgo' && {
 	ui_header1 "CSGO";
 
 	ui_header2 "Fetching LL CSGO repos";
-	(cd ./repos/ && source ./reindex-csgo.sh) || fail_error "Fetch CSGO repos";
+	(cd ./repos/ && ./reindex-csgo.sh) || fail_error "Fetch CSGO repos";
 
 	# base image
 	if [ "$option_skip_base" != 'true' ]; then
 		ui_header2 "Build gamesvr-csgo";
 		if [ "$option_delta_updates" = 'true' ]; then
-			(cd ./repos/lacledeslan/gamesvr-csgo && source ./build.sh --delta);
+			(cd ./repos/lacledeslan/gamesvr-csgo && ./build.sh --delta);
 			report_build "gamesvr-csgo" "$?";
 		else
-			(cd ./repos/lacledeslan/gamesvr-csgo && source ./build.sh);
+			(cd ./repos/lacledeslan/gamesvr-csgo && ./build.sh);
 			report_build "gamesvr-csgo" "$?";
 		fi;
 	fi;
 
 	# derivative images
 	if builds_failed_includes 'gamesvr-csgo'; then
-		builds_skipped_add "gamesvr-csgo-freeplay"
-		builds_skipped_add "gamesvr-csgo-test"
-		builds_skipped_add "gamesvr-csgo-tourney"
-		builds_skipped_add "gamesvr-csgo-warmod"
+		builds_aborted_add "gamesvr-csgo-freeplay"
+		builds_aborted_add "gamesvr-csgo-test"
+		builds_aborted_add "gamesvr-csgo-tourney"
 	else
 		ui_header2 "Build gamesvr-csgo-freeplay";
-		(cd ./repos/lacledeslan/gamesvr-csgo-freeplay && source ./build.sh) || report_error "Build gamesvr-csgo-freeplay";
+		(cd ./repos/lacledeslan/gamesvr-csgo-freeplay && ./build.sh);
 		report_build "gamesvr-csgo-freeplay" "$?";
 
 		ui_header2 "Build gamesvr-csgo-test";
-		(cd ./repos/lacledeslan/gamesvr-csgo-test && source ./build.sh) || report_error "Build gamesvr-csgo-test";
+		(cd ./repos/lacledeslan/gamesvr-csgo-test && ./build.sh);
 		report_build "gamesvr-csgo-test" "$?";
 
 		ui_header2 "Build gamesvr-csgo-tourney";
-		(cd ./repos/lacledeslan/gamesvr-csgo-tourney && source ./build.sh) || report_error "Build gamesvr-csgo-tourney";
+		(cd ./repos/lacledeslan/gamesvr-csgo-tourney && ./build.sh);
 		report_build "Build gamesvr-csgo-tourney" "$?";
 	fi;
 }
@@ -276,27 +276,27 @@ build_targets_include 'tf2' && {
 	ui_header1 "TF2";
 
 	ui_header2 "Fetching LL TF2 repos";
-	(cd ./repos/ && source ./reindex-tf2.sh) || fail_error "Fetch TF2 repos";
+	(cd ./repos/ && ./reindex-tf2.sh) || fail_error "Fetch TF2 repos";
 
 	if [ "$option_skip_base" != 'true' ]; then
 		ui_header2 "Build gamesvr-tf2";
 		if [ "$option_delta_updates" = 'true' ]; then
-			(cd ./repos/lacledeslan/gamesvr-tf2 && source ./build.sh --delta)
+			(cd ./repos/lacledeslan/gamesvr-tf2 && ./build.sh --delta)
 			report_build "gamesvr-tf2" "$?";
 		else
-			(cd ./repos/lacledeslan/gamesvr-tf2 && source ./build.sh)
+			(cd ./repos/lacledeslan/gamesvr-tf2 && ./build.sh)
 			report_build "gamesvr-tf2" "$?";
 		fi;
 	fi;
 
 	if builds_failed_includes "gamesvr-tf2"; then
-		builds_skipped_add "gamesvr-tf2-blindfrag"
-		builds_skipped_add "gamesvr-tf2-freeplay"
+		builds_aborted_add "gamesvr-tf2-blindfrag"
+		builds_aborted_add "gamesvr-tf2-freeplay"
 	else
-		# TODO: Blind Frag
+		# TODO: gamesvr-tf2-blindfrag
 
-		ui_header2 "Build gamesvr-tf2-freeplay";
-		(cd ./repos/lacledeslan/gamesvr-tf2-freeplay && source ./build.sh)
+		ui_header2 "Build gamesvr-tf2";
+		(cd ./repos/lacledeslan/gamesvr-tf2-freeplay && ./build.sh)
 		report_build "gamesvr-tf2-freeplay" "$?";
 	fi;
 }
@@ -306,17 +306,19 @@ build_targets_include 'tf2classic' && {
 	ui_header1 "TF2 Classic";
 
 	ui_header2 "Fetching LL TF2 Classic repos";
-	(cd ./repos/ && source ./reindex-tf2classic.sh)  || fail_error "Fetch TF2 Classic repos";
+	(cd ./repos/ && ./reindex-tf2classic.sh) || fail_error "Fetch TF2 Classic repos";
 
-	ui_header2 "Build gamesvr-tf2classic";
-	(cd ./repos/lacledeslan/gamesvr-tf2classic && source ./build.sh)
-	report_build "gamesvr-tf2" "$?";
+	if [ "$option_skip_base" != 'true' ]; then
+		ui_header2 "Build gamesvr-tf2classic";
+		(cd ./repos/lacledeslan/gamesvr-tf2classic && ./build.sh)
+		report_build "gamesvr-tf2" "$?";
+	fi;
 
 	if builds_failed_includes "gamesvr-tf2classic"; then
-		builds_skipped_add "gamesvr-tf2classic-freeplay"
+		builds_aborted_add "gamesvr-tf2classic-freeplay"
 	else
 		ui_header2 "Build gamesvr-tf2classic-freeplay";
-		(cd ./repos/lacledeslan/gamesvr-tf2classic-freeplay && source ./build.sh)
+		(cd ./repos/lacledeslan/gamesvr-tf2classic-freeplay && ./build.sh)
 		report_build "gamesvr-tf2classic-freeplay" "$?";
 	fi;
 }
@@ -326,28 +328,29 @@ build_targets_include 'tf2classic' && {
 ## Report results
 ####################################################################################################
 
-ui_header1 "Build Results";
+ui_header1 "Results for \"$LL_GAMESVR_BLD_COMMAND\"";
 
-echo -e "\tScript started with: $LL_GAMESVR_BLD_COMMAND\n"
-LL_GAMESVR_BLD_END_TIME="$(date +%s)";
-echo -e "\tScript completed in $($LL_GAMESVR_BLD_END_TIME - $LL_GAMESVR_BLD_START_TIME) seconds.\n"
-
+echo -e "\nScript completed in $(($(date +%s) - "$LL_GAMESVR_BLD_START_TIME")) seconds.\n"
 
 if (( ${#builds_completed[@]} )); then
 	printf -v joined '%s, ' "${builds_completed[@]}"
-	echo >&2 "Completed builds: ${joined%,}"
+	echo -e "Successful builds: ${joined%,}"
 fi
 
 if (( ${#builds_failed[@]} )); then
 	printf -v joined '%s, ' "${builds_failed[@]}"
-	echo >&2 "Failed builds: ${joined%,}"
+	echo -e "Failed builds: ${joined%,}"
 fi
 
-if (( ${#builds_skipped[@]} )); then
-printf -v joined '%s, ' "${builds_skipped[@]}"
-	echo >&2 "Unintentionally skipped builds: ${joined%,}"
+if (( ${#builds_aborted[@]} )); then
+printf -v joined '%s, ' "${builds_aborted[@]}"
+	echo -e "Aborted builds: ${joined%,}"
 fi
 
-if (( ${#builds_failed[@]} )); then
+echo -e "\n\n";
+
+if (( ${#builds_failed[@]} )) || (( ${#builds_aborted[@]} )); then
 	exit 1;
+else
+	exit 0;
 fi
