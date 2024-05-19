@@ -270,7 +270,7 @@ build_targets_include 'tf2classic' && {
 	if [ "$option_skip_base" != 'true' ]; then
 		ui_header2 "Build gamesvr-tf2classic";
 		(cd ./repos/lacledeslan/gamesvr-tf2classic && ./build.sh)
-		report_build "gamesvr-tf2" "$?";
+		report_build "gamesvr-tf2classic" "$?";
 	fi;
 
 	if builds_failed_includes "gamesvr-tf2classic"; then
