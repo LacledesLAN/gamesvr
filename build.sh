@@ -50,13 +50,10 @@ do
 		--blackmesa)
 			option_build_targets+=('blackmesa')
 			;;
-		--csgo)
-			option_build_targets+=('csgo')
-			;;
 		--tf2)
 			option_build_targets+=('tf2')
 			;;
-		--tf2classic)
+		--tf2c|tf2classic)
 			option_build_targets+=('tf2classic')
 			;;
 		# unknown
@@ -232,44 +229,6 @@ build_targets_include 'blackmesa' && {
 	fi;
 }
 
-## CSGO
-build_targets_include 'csgo' && {
-	ui_header1 "CSGO";
-
-	ui_header2 "Fetching LL CSGO repos";
-	(cd ./repos/ && ./reindex-csgo.sh) || fail_error "Fetch CSGO repos";
-
-	# base image
-	if [ "$option_skip_base" != 'true' ]; then
-		ui_header2 "Build gamesvr-csgo";
-		if [ "$option_delta_updates" = 'true' ]; then
-			(cd ./repos/lacledeslan/gamesvr-csgo && ./build.sh --delta);
-			report_build "gamesvr-csgo" "$?";
-		else
-			(cd ./repos/lacledeslan/gamesvr-csgo && ./build.sh);
-			report_build "gamesvr-csgo" "$?";
-		fi;
-	fi;
-
-	# derivative images
-	if builds_failed_includes 'gamesvr-csgo'; then
-		builds_aborted_add "gamesvr-csgo-freeplay"
-		builds_aborted_add "gamesvr-csgo-test"
-		builds_aborted_add "gamesvr-csgo-tourney"
-	else
-		ui_header2 "Build gamesvr-csgo-freeplay";
-		(cd ./repos/lacledeslan/gamesvr-csgo-freeplay && ./build.sh);
-		report_build "gamesvr-csgo-freeplay" "$?";
-
-		ui_header2 "Build gamesvr-csgo-test";
-		(cd ./repos/lacledeslan/gamesvr-csgo-test && ./build.sh);
-		report_build "gamesvr-csgo-test" "$?";
-
-		ui_header2 "Build gamesvr-csgo-tourney";
-		(cd ./repos/lacledeslan/gamesvr-csgo-tourney && ./build.sh);
-		report_build "Build gamesvr-csgo-tourney" "$?";
-	fi;
-}
 
 ## TF2
 build_targets_include 'tf2' && {
