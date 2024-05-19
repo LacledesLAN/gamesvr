@@ -53,7 +53,7 @@ do
 		--tf2)
 			option_build_targets+=('tf2')
 			;;
-		--tf2c|tf2classic)
+		--tf2c|--tf2classic)
 			option_build_targets+=('tf2classic')
 			;;
 		# unknown
