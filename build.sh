@@ -267,6 +267,7 @@ build_targets_include 'tf2' && {
 	fi;
 }
 
+
 ## TF2 Classic
 build_targets_include 'tf2classic' && {
 	ui_header1 "TF2 Classic";
