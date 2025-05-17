@@ -26,7 +26,7 @@ Builds Laclede's LAN game server that are not built via Github actions.
 | Argument       | Base Image           | Derived Images                   |
 | :------------- | :------------------- | :------------------------------- |
 | `--blackmesa`  | `gamesvr-blackmesa`  | `-freeplay`                      |
-| `--tf2`        | `gamesvr-tf2`        | `-blindfrag`, `-freeplay`        |
+| `--tf2`        | `gamesvr-tf2`        | `-freeplay`                      |
 | `--tf2classic` | `gamesvr-tf2classic` | `-freeplay`                      |
 
 ## `offline.sh`

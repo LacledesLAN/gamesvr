@@ -14,10 +14,10 @@ fi
 
 #=============================================================================================================
 #
-#   Clone a repo if it hasn't alread been cloned. Otherwise, fetch the latest contents if the working tree
+#   Clone a repo if it hasn't already been cloned. Otherwise, fetch the latest contents if the working tree
 #   is not dirty.
 #
-#   ARUGMENTS:
+#   ARGUMENTS:
 #                   1: The URL of the remote git repo to clone.
 #                   2: The folder to clone the repo to.
 #
@@ -52,7 +52,13 @@ function git_clone() {
     then
         # PATH_DESTINATION exists
         if [[ $(git -C "$PATH_DESTINATION" diff --stat) != '' ]]; then
-            echo "[$2] - Cannot update - has uncommited changes!"
+            echo "[$2] - Cannot update - has uncommitted changes!"
+
+			for i in {6..1}
+			do
+  				echo -ne "\rProceeding in $i..."
+  				sleep 1;
+			done
         else
             echo -n "[$2] - Updating repo: "
             git -C "$PATH_DESTINATION" pull --recurse-submodules;
@@ -60,7 +66,11 @@ function git_clone() {
     else
         # PATH_DESTINATION doesn't exist
         echo -n "[$2] - Cloning..."
-        git clone --recurse-submodules --quiet "$1" "$PATH_DESTINATION"
+		git clone --recurse-submodules --quiet "$1" "$PATH_DESTINATION"
+
+		# Set the fileMode to false, to prevent file permissions changes from being tracked
+		git config --file "$PATH_DESTINATION/.git/config" core.fileMode false
+
         echo "done."
     fi
 }
@@ -70,7 +80,7 @@ function git_clone() {
 #
 #   Clone and/or update a git repo.
 #
-#   ARUGMENTS:
+#   ARGUMENTS:
 #                   1: The URL of the remote git repo to clone.
 #                   2: The folder to clone the repo to.
 #
@@ -80,10 +90,16 @@ function git_update() {
     if [ -z "$1" ]; then
         echo "ERROR: parameter #1 (repository URL) is required; cannot be zero length1";
         exit 1;
-    elif [[ ! "$1" == *"://"* ]]; then
-        echo "ERROR: parameter #1 (repository URL) must contain protocol information!";
-        exit 1;
     else
+		git ls-remote "$1" > /dev/null 2>&1
+
+		if [ "$?" -ne 0 ]; then
+    		echo "[ERROR] Unable to read from '$1'. Invalid or unreachable Git repository."
+    		exit 1;
+		else
+    		echo "[SUCCESS] Repository '$1' is accessible."
+		fi
+
         local REPO_URL="$1";
     fi;
 
@@ -105,19 +121,28 @@ function git_update() {
     if [[ -d "$PATH_DESTINATION" ]]
     then
         # PATH_DESTINATION exists
+
+		if ! git -C "$PATH_DESTINATION" rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+    		echo "'$PATH_DESTINATION' already exists but is not a git repository."
+			echo "Unable to clone or update the repository '$REPO_URL'."
+    		exit 1;
+		fi
+
         if [[ $(git -C "$PATH_DESTINATION" diff --stat) != '' ]]; then
-            echo -n "[$2] - Stashing uncommited changes: "
+            echo -n "[$2] - Stashing uncommitted changes: "
             git -C "$PATH_DESTINATION" stash
         fi
 
         echo -n "[$2] - Updating repo: "
         git -C "$PATH_DESTINATION" pull --recurse-submodules;
-    else
-        # PATH_DESTINATION doesn't exist
-        echo -n "[$2] - Cloning repo..."
-        git clone --recurse-submodules --quiet "$1" "$PATH_DESTINATION"
-        echo "done."
-    fi
+
+		return;
+	fi;
+
+	# PATH_DESTINATION doesn't exist
+	echo -n "[$2] - Cloning repo..."
+	git clone --recurse-submodules --quiet "$1" "$PATH_DESTINATION"
+	echo "done."
 }
 
 

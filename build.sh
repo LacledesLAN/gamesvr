@@ -127,7 +127,7 @@ function report_build {
 }
 
 # Custom sigterm handler, so that interupt signals terminate the script even when a
-# subshell is active.
+# sub-shell is active.
 sigterm_handler() {
 	echo -e "\n";
 	exit 1;
@@ -229,7 +229,7 @@ build_targets_include 'blackmesa' && {
 		fi;
 	fi;
 
-		# derivative images
+	# derivative images
 	if builds_failed_includes 'gamesvr-blackmesa'; then
 		builds_aborted_add "gamesvr-blackmesa-freeplay";
 	else
@@ -259,11 +259,8 @@ build_targets_include 'tf2' && {
 	fi;
 
 	if builds_failed_includes "gamesvr-tf2"; then
-		builds_aborted_add "gamesvr-tf2-blindfrag"
 		builds_aborted_add "gamesvr-tf2-freeplay"
 	else
-		# TODO: gamesvr-tf2-blindfrag
-
 		ui_header2 "Build gamesvr-tf2";
 		(cd ./repos/lacledeslan/gamesvr-tf2-freeplay && ./build.sh)
 		report_build "gamesvr-tf2-freeplay" "$?";
