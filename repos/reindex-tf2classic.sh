@@ -9,4 +9,7 @@ source "../bin/linux/funcs.sh"
 #
 
 git_clone "https://github.com/LacledesLAN/gamesvr-tf2classic" "./lacledeslan/gamesvr-tf2classic"
+chmod +x "./lacledeslan/gamesvr-tf2classic/build.sh"
+
 git_clone "https://github.com/LacledesLAN/gamesvr-tf2classic-freeplay" "./lacledeslan/gamesvr-tf2classic-freeplay"
+chmod +x "./lacledeslan/gamesvr-tf2classic-freeplay/build.sh"

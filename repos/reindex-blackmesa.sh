@@ -9,4 +9,7 @@ source "../bin/linux/funcs.sh"
 #
 
 git_clone "https://github.com/LacledesLAN/gamesvr-blackmesa" "./lacledeslan/gamesvr-blackmesa"
+chmod +x "./lacledeslan/gamesvr-blackmesa/build.sh"
+
 git_clone "https://github.com/LacledesLAN/gamesvr-blackmesa-freeplay" "./lacledeslan/gamesvr-blackmesa-freeplay"
+chmod +x "./lacledeslan/gamesvr-blackmesa-freeplay/build.sh"
