@@ -205,7 +205,7 @@ build_targets_include 'blackmesa' && {
 	ui_header1 "Blackmesa";
 
 	ui_header2 "Fetching LL Blackmesa repos";
-	(cd ./repos/ && ./reindex-blackmesa.sh) || fail_error "Fetch CSGO repos";
+	(cd ./repos/ && ./reindex-blackmesa.sh) || fail_error "Fetch Blackmesa repos";
 
 	# base image
 	if [ "$option_skip_base" != 'true' ]; then
