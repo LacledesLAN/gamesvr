@@ -11,8 +11,6 @@ source "../bin/linux/funcs.sh"
 git_clone "https://github.com/LacledesLAN/gamesvr-7daystodie" "./lacledeslan/gamesvr-7daystodie"
 git_clone "https://github.com/LacledesLAN/gamesvr-7daystodie-freeplay" "./lacledeslan/gamesvr-7daystodie-freeplay"
 ./reindex-blackmesa.sh
-./reindex-csgo.sh
-git_clone "https://github.com/LacledesLAN/gamesvr-csgo-warmod" "./lacledeslan/gamesvr-csgo-warmod"
 git_clone "https://github.com/LacledesLAN/gamesvr-cssource" "./lacledeslan/gamesvr-cssource"
 git_clone "https://github.com/LacledesLAN/gamesvr-cssource-freeplay" "./lacledeslan/gamesvr-cssource-freeplay"
 git_clone "https://github.com/LacledesLAN/gamesvr-dods" "./lacledeslan/gamesvr-dods"
