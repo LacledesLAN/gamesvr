@@ -149,6 +149,16 @@ if [ "$option_skip_base" = 'true' ]; then
 	echo -e "Skipping base image builds.\n";
 fi;
 
+# Loop through all .sh files in repos directory and make them executable
+for script in "$(pwd)/repos/"*.sh; do
+    # Check if the file is not executable
+    if [ ! -x "$script" ]; then
+        chmod +x "$script"
+        echo "Made $script executable"
+    fi
+done
+
+
 ####################################################################################################
 ## Build
 ####################################################################################################
