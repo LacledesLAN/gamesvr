@@ -200,6 +200,8 @@ if [ ${#option_build_targets[@]} -eq 0 ] && [ "$option_skip_base" != 'true' ]; t
     echo -ne "  ──██────▐█▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█▌      \n"; sleep 0.01;
 	echo -e "\n";  sleep 0.01;
     sleep 0.4;
+elif [ "${#option_build_targets[@]}" -eq 1 ]; then
+	echo "Build target: ${option_build_targets[0]}"
 else
 	printf -v joined '%s, ' "${option_build_targets[@]}"
 	echo "Build targets: ${joined%,}"
