@@ -57,7 +57,6 @@ git_clone "https://github.com/LacledesLAN/SteamCMD" "./lacledeslan/SteamCMD"
 # LL Dependency Mirrors
 git_clone "https://github.com/LacledesLAN/amxmodx" "./lacledeslan/amxmodx"
 git_clone "https://github.com/LacledesLAN/sourcemod.linux" "./lacledeslan/sourcemod.linux"
-git_clone "https://github.com/LacledesLAN/sourcemod.windows" "./lacledeslan/sourcemod.windows"
 git_clone "https://github.com/LacledesLAN/sourcemod-configs" "./lacledeslan/sourcemod-configs"
 
 # 3rd Party Sources
