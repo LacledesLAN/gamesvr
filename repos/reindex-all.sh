@@ -9,8 +9,9 @@ source "../bin/linux/funcs.sh"
 
 # LL Game Server Repos
 git_clone "https://github.com/LacledesLAN/gamesvr-7daystodie" "./lacledeslan/gamesvr-7daystodie"
-git_clone "https://github.com/LacledesLAN/gamesvr-7daystodie-freeplay" "./lacledeslan/gamesvr-7daystodie-freeplay"
 ./reindex-blackmesa.sh
+git_clone "https://github.com/LacledesLAN/gamesvr-cs2d" "./lacledeslan/gamesvr-cs2d"
+git_clone "https://github.com/LacledesLAN/gamesvr-cs2d-freeplay" "./lacledeslan/gamesvr-cs2d-freeplay"
 git_clone "https://github.com/LacledesLAN/gamesvr-cssource" "./lacledeslan/gamesvr-cssource"
 git_clone "https://github.com/LacledesLAN/gamesvr-cssource-freeplay" "./lacledeslan/gamesvr-cssource-freeplay"
 git_clone "https://github.com/LacledesLAN/gamesvr-dods" "./lacledeslan/gamesvr-dods"
@@ -18,8 +19,6 @@ git_clone "https://github.com/LacledesLAN/gamesvr-dods-freeplay" "./lacledeslan/
 git_clone "https://github.com/LacledesLAN/gamesvr-factorio" "./lacledeslan/gamesvr-factorio"
 git_clone "https://github.com/LacledesLAN/gamesvr-fof" "./lacledeslan/gamesvr-fof"
 git_clone "https://github.com/LacledesLAN/gamesvr-garrysmod" "./lacledeslan/gamesvr-garrysmod"
-git_clone "https://github.com/LacledesLAN/gamesvr-gesource" "./lacledeslan/gamesvr-gesource"
-git_clone "https://github.com/LacledesLAN/gamesvr-gesource-freeplay" "./lacledeslan/gamesvr-gesource-freeplay"
 git_clone "https://github.com/LacledesLAN/gamesvr-goldsource" "./lacledeslan/gamesvr-goldsource"
 git_clone "https://github.com/LacledesLAN/gamesvr-goldsource-cstrike" "./lacledeslan/gamesvr-goldsource-cstrike"
 git_clone "https://github.com/LacledesLAN/gamesvr-goldsource-dmc" "./lacledeslan/gamesvr-goldsource-dmc"
@@ -39,7 +38,7 @@ git_clone "https://github.com/LacledesLAN/gamesvr-satisfactory" "./lacledeslan/g
 git_clone "https://github.com/LacledesLAN/gamesvr-quake2" "./lacledeslan/gamesvr-quake2"
 git_clone "https://github.com/LacledesLAN/gamesvr-quake2-freeplay" "./lacledeslan/gamesvr-quake2-freeplay"
 ./reindex-tf2.sh
-./reindex-tf2classic.sh
+./reindex-tf2classified.sh
 git_clone "https://github.com/LacledesLAN/gamesvr-ut99" "./lacledeslan/gamesvr-ut99"
 git_clone "https://github.com/LacledesLAN/gamesvr-ut2004" "./lacledeslan/gamesvr-ut2004"
 git_clone "https://github.com/LacledesLAN/gamesvr-ut2004-freeplay" "./lacledeslan/gamesvr-ut2004-freeplay"

@@ -1,326 +1,291 @@
 #!/bin/bash
-#
+set -euo pipefail
+
 # Build Laclede's LAN game server docker images, that are too large to be built in Github actions.
 
 ####################################################################################################
 ## Environment
 ####################################################################################################
 
-set -u;
 source "$( cd "${BASH_SOURCE[0]%/*}" && pwd )/bin/linux/funcs.sh"
-LL_GAMESVR_BLD_COMMAND="$0 $*";				# The command line used to run this script.
-LL_GAMESVR_BLD_START_TIME=$(date +%s);		# The time this script started (seconds since epoch).
-
+LL_GAMESVR_BLD_COMMAND="$0 $*"
+LL_GAMESVR_BLD_START_TIME=$(date +%s)
 
 ####################################################################################################
 ## Options
 ####################################################################################################
 
-# Default options
-option_build_targets=()		# List of targets that should be built.
-option_delta_updates=false;	# Only build delta layer at the base image level?
-option_fast_fail=false;		# Exit this script the first time something goes wrong?
-option_skip_base=false;		# Skip base builds?
+build_targets=()
+flow_options=()
+build_options=()
 
-# Script vars
-builds_aborted=()			# List of builds that were aborted, because of a problem.
-builds_completed=()			# List of builds that completed successfully.
-builds_failed=()			# List of builds that failed.
-
+# Using simple tracking arrays for cleanliness
+completed_builds=()
+failed_builds=()
+aborted_builds=()
 
 # Parse command line options
 while [ "$#" -gt 0 ]
 do
-	case "$1" in
-		# options
-		-c|--cache-level)
-			echo "$2"
-			shift
-			;;
-		-d|--delta)
-			option_delta_updates=true;
-			;;
-		--fast-fail)
-			option_fast_fail=true;
-			;;
-		--no-base|--skip-base)
-			option_skip_base=true;
-			;;
-		# build targets
-		--blackmesa)
-			option_build_targets+=('blackmesa')
-			;;
-		--tf2)
-			option_build_targets+=('tf2')
-			;;
-		--tf2c|--tf2classic)
-			option_build_targets+=('tf2classic')
-			;;
-		# unknown
-		*)
-			echo "Error: unknown option '${1}'. Exiting." >&2;
-			exit 12;
-			;;
-	esac
-	shift
-done
+    case "$1" in
+		# Build options; passed down to child scripts for Docker build customization
+        -d|--delta)                  build_options+=("--delta") ;;
+        --delete-built-image)        build_options+=("--delete-built-image") ;;
+        --enable-steamcmd-cache)     build_options+=("--enable-steamcmd-cache") ;;
+        --no-docker-cache)           build_options+=("--no-docker-cache") ;;
+        --skip-pull)                 build_options+=("--skip-pull") ;;
+        --skip-tests)                build_options+=("--skip-tests") ;;
+        --skip-push)                 build_options+=("--skip-push") ;;
 
+        # Flow options
+        --fast-fail)                 flow_options+=('fast-fail') ;;
+        --no-base|--skip-base)       flow_options+=('skip-base') ;;
+
+        # Build targets aliases map cleanly to their core folder names
+        --7days|--7daysstodie)       build_targets+=('7daysstodie') ;;
+        --blackmesa)                 build_targets+=('blackmesa') ;;
+        --tf2)                       build_targets+=('tf2') ;;
+        --tf2c|--tf2classified)      build_targets+=('tf2classified') ;;
+        *)
+            echo "Error: unknown option '${1}'. Exiting." >&2
+            exit 12
+            ;;
+    esac
+    shift
+done
 
 ####################################################################################################
 ## Helper Functions
 ####################################################################################################
 
-# Use to check if a build has been reported as failed. Returns 0 if the build target is in the list
-# of failed builds, otherwise returns 1.
-# $1 The build target to check (e.g. "gamesvr-blackmesa-freeplay")
+# USAGE: has_flow_option "option_name"
+# PURPOSE: Checks if a specific flow control flag exists in the global 'flow_options' array.
+# ARGS: $1 = The string option to search for (e.g., 'fast-fail')
+# RETURNS: 0 if option is found, 1 otherwise
+function has_flow_option {
+    local element
+    for element in "${flow_options[@]}"; do
+        [[ "$element" == "$1" ]] && return 0
+    done
+    return 1
+}
+
+# USAGE: has_build_option "option_name"
+# PURPOSE: Checks if a specific Docker build flag exists in the global 'build_options' array.
+# ARGS: $1 = The string option to search for (e.g., '--skip-pull')
+# RETURNS: 0 if option is found, 1 otherwise
+function has_build_option {
+    local element
+    for element in "${build_options[@]}"; do
+        [[ "$element" == "$1" ]] && return 0
+    done
+    return 1
+}
+
+# USAGE: builds_failed_includes "image_name"
+# PURPOSE: Determines if a given image build has failed by checking the global 'failed_builds' array.
+# ARGS: $1 = Name of the base image to check
+# RETURNS: 0 if the image is in the failure list, 1 otherwise
 function builds_failed_includes {
-	for element in in "${builds_failed[@]}"; do
-		if [[ "$element" == "$1" ]]; then
-			return 0;
-		fi
-	done
-	return 1;
+    local element
+    for element in "${failed_builds[@]}"; do
+        [[ "$element" == "$1" ]] && return 0
+    done
+    return 1
 }
 
-# Check if a build target is in the list of selected build targets. Returns 0 if build target was
-# selected, or the build target list is empty (build everything), otherwise returns 1.
-# $1 The build target to check (e.g. "blackmesa")
+# USAGE: build_targets_include "game_shortname"
+# PURPOSE: Determines if a specific game target should be built. If no specific targets
+#          were requested via command line arguments, it assumes all targets are included.
+# ARGS: $1 = Internal shortname of the game target (e.g., 'tf2')
+# RETURNS: 0 if target should be built (or array is empty), 1 if target should be skipped
 function build_targets_include {
-	if [ ${#option_build_targets[@]} -eq 0 ]; then
-		return 0;
-	fi
-
-	for element in in "${option_build_targets[@]}"; do
-		if [[ "$element" == "$1" ]]; then
-			return 0;
-		fi
-	done
-	return 1;
+    [[ ${#build_targets[@]} -eq 0 ]] && return 0
+    local element
+    for element in "${build_targets[@]}"; do
+        [[ "$element" == "$1" ]] && return 0
+    done
+    return 1
 }
 
-function builds_aborted_add {
-	ui_header2 "$1";
-
-	echo -e "Skipped.\n";
-	builds_aborted+=("$1")
-}
-
-# Reports an failure and immediately exits the script.
-# $1 description of what failed.
+# USAGE: fail_error "context_message"
+# PURPOSE: Prints a standardized failure message to stderr and aborts script execution.
+# ARGS: $1 = Descriptive text indicating what action or command failed
+# RETURNS: None (exits script with code 1)
 function fail_error {
-	echo >&2 "'$1' failed. Exiting.";
-	exit 1;
+    echo >&2 "'$1' failed. Exiting."
+    exit 1
 }
 
-# Process the results of a build.
-# $1 the name of the target artifact
-# $2 exit code from the build process
+# USAGE: join_by "delimiter" "${array[@]}"
+# PURPOSE: Safely concatenates array elements together into a single string separated by a delimiter.
+# ARGS: $1 = Delimiter character/string (e.g., ', ')
+#       $2... = Elements of the array to be joined
+# RETURNS: Outputs the combined string to stdout
+function join_by {
+    local d=${1-} f=${2-}
+    if shift 2; then
+        printf %s "$f" "${@/#/$d}"
+    fi
+}
+
+# USAGE: report_build "target_name" "exit_code"
+# PURPOSE: Audits the termination status of an individual image build. Logs success, handles
+#          immediate pipeline abortion on 'fast-fail', or marks it as failed for late-reporting.
+# ARGS: $1 = Name of the image target that just finished building
+#       $2 = Numerical exit code returned by the target's build script
+# RETURNS: None (may exit script if fast-fail option is active)
 function report_build {
-	if [ "$2" -eq 0 ]; then
-		builds_completed+=("$1")
-	elif [ "$option_fast_fail" = 'true' ]; then
-		echo >&2 "Build '$1' failed. Exiting.";
-		exit 1;
-	else
-		builds_failed+=("$1")
-	fi
+    local target="$1"
+    local exit_code="$2"
+
+    if [ "$exit_code" -eq 0 ]; then
+        completed_builds+=("$target")
+    elif has_flow_option 'fast-fail'; then
+        echo >&2 "Build '$target' failed (Exit: $exit_code). Fast-failing script."
+        exit 1
+    else
+        failed_builds+=("$target")
+    fi
 }
 
-# Custom sigterm handler, so that interupt signals terminate the script even when a
-# sub-shell is active.
+# USAGE: sigterm_handler
+# PURPOSE: Acts as a clean-up interface triggered upon receiving termination signals (SIGINT, SIGTERM, etc.).
+# ARGS: None
+# RETURNS: None (exits script with code 1)
 sigterm_handler() {
-	echo -e "\n";
-	exit 1;
+    echo -e "\n"
+    exit 1
 }
-
 
 ####################################################################################################
 ## Preflight Checks
 ####################################################################################################
 
-if ! docker info > /dev/null 2>&1; then
-  echo >&2 "This script required Docker. Start Docker and re-run."
-  exit 1;
+for cmd in git docker; do
+    if ! command -v "$cmd" &> /dev/null; then
+        printf "ERROR: %s is not installed or not in your PATH.\n" "${cmd^}" >&2
+        exit 1
+    fi
+done
+
+if ! docker info &> /dev/null; then
+    printf "ERROR: Docker is installed, but the current user cannot access the Docker daemon.\n" >&2
+    exit 1
 fi
 
 trap 'trap " " SIGINT SIGTERM SIGHUP; kill 0; wait; sigterm_handler' SIGINT SIGTERM SIGHUP
 
-if [ "$option_skip_base" = 'true' ]; then
-	echo -e "Skipping base image builds.\n";
-fi;
+if has_flow_option 'skip-base'; then
+    echo -e "Skipping base image builds.\n"
+fi
 
-# Loop through all .sh files in repos directory and make them executable
+# Ensure all scripts are executable
 for script in "$(pwd)/repos/"*.sh; do
-    # Check if the file is not executable
+    [ -e "$script" ] || continue
     if [ ! -x "$script" ]; then
         chmod +x "$script"
         echo "Made $script executable"
     fi
 done
 
-
 ####################################################################################################
-## Build
+## Build Engine
 ####################################################################################################
 
-# If no build targets are specified, build all possible targets
-if [ ${#option_build_targets[@]} -eq 0 ] && [ "$option_skip_base" != 'true' ]; then
-    echo -ne "\n";
-	echo -ne "      BUILD ALL THE TARGETS!\n"; sleep 0.01;
-    echo -ne "  ─────────────────────────────▄██▄ \n";
-    echo -ne "  ─────────────────────────────▀███ \n"; sleep 0.01;
-    echo -ne "  ────────────────────────────────█ \n"; sleep 0.01;
-    echo -ne "  ───────────────▄▄▄▄▄────────────█ \n"; sleep 0.01;
-    echo -ne "  ──────────────▀▄────▀▄──────────█ \n"; sleep 0.01;
-    echo -ne "  ──────────▄▀▀▀▄─█▄▄▄▄█▄▄─▄▀▀▀▄──█ \n"; sleep 0.01;
-    echo -ne "  ─────────█──▄──█────────█───▄─█─█ \n"; sleep 0.01;
-    echo -ne "  ─────────▀▄───▄▀────────▀▄───▄▀─█ \n"; sleep 0.01;
-    echo -ne "  ──────────█▀▀▀────────────▀▀▀─█─█ \n"; sleep 0.01;
-    echo -ne "  ──────────█───────────────────█─█ \n"; sleep 0.01;
-    echo -ne "  ▄▀▄▄▀▄────█──▄█▀█▀█▀█▀█▀█▄────█─█ \n"; sleep 0.01;
-    echo -ne "  █▒▒▒▒█────█──█████████████▄───█─█ \n"; sleep 0.01;
-    echo -ne "  █▒▒▒▒█────█──██████████████▄──█─█ \n"; sleep 0.01;
-    echo -ne "  █▒▒▒▒█────█───██████████████▄─█─█ \n"; sleep 0.01;
-    echo -ne "  █▒▒▒▒█────█────██████████████─█─█ \n"; sleep 0.01;
-    echo -ne "  █▒▒▒▒█────█───██████████████▀─█─█ \n"; sleep 0.01;
-    echo -ne "  █▒▒▒▒█───██───██████████████──█─█ \n"; sleep 0.01;
-    echo -ne "  ▀████▀──██▀█──█████████████▀──█▄█ \n"; sleep 0.01;
-    echo -ne "  ──██───██──▀█──█▄█▄█▄█▄█▄█▀──▄█▀  \n"; sleep 0.01;
-    echo -ne "  ──██──██────▀█─────────────▄▀▓█   \n"; sleep 0.01;
-    echo -ne "  ──██─██──────▀█▀▄▄▄▄▄▄▄▄▄▀▀▓▓▓█   \n"; sleep 0.01;
-    echo -ne "  ──████────────█▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█   \n"; sleep 0.01;
-    echo -ne "  ──███─────────█▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█   \n"; sleep 0.01;
-    echo -ne "  ──██──────────█▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█   \n"; sleep 0.01;
-    echo -ne "  ──██──────────█▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█   \n"; sleep 0.01;
-    echo -ne "  ──██─────────▐█▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█   \n"; sleep 0.01;
-    echo -ne "  ──██────────▐█▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█   \n"; sleep 0.01;
-    echo -ne "  ──██───────▐█▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█▌   \n"; sleep 0.01;
-    echo -ne "  ──██──────▐█▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█▌    \n"; sleep 0.01;
-    echo -ne "  ──██─────▐█▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█▌     \n"; sleep 0.01;
-    echo -ne "  ──██────▐█▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█▌      \n"; sleep 0.01;
-	echo -e "\n";  sleep 0.01;
-    sleep 0.4;
-elif [ "${#option_build_targets[@]}" -eq 1 ]; then
-	echo "Build target: ${option_build_targets[0]}"
+# Target layout printing
+if [ ${#build_targets[@]} -eq 0 ]; then
+    echo "Build target: ALL"
 else
-	printf -v joined '%s, ' "${option_build_targets[@]}"
-	echo "Build targets: ${joined%,}"
+    echo "Build targets: $(join_by ', ' "${build_targets[@]}")"
 fi
 
+if ! has_build_option '--skip-pull'; then
+    ui_header1 "pull lacledeslan/steamcmd"
+    docker pull lacledeslan/steamcmd
+else
+    echo -e "Skipping pull of lacledeslan/steamcmd.\n"
+fi
 
-ui_header1 "pull lacledeslan/steamcmd";
-docker pull lacledeslan/steamcmd;
+# USAGE: execute_build_pipeline "shortname" "UI Header Title" [derivatives...]
+# PURPOSE: Reusable orchestration engine that syncs specialized git repositories, builds
+#          the core game server base image, and sequentially processes downstream configurations.
+# ARGS: $1 = Internal game directory/file hook keyword (e.g., 'tf2')
+#       $2 = Clean user-interface heading title (e.g., 'TF2')
+#       $3... = Zero or more optional space-separated sub-mod/mode suffixes (e.g., 'freeplay')
+# RETURNS: 0 if target is skipped or successfully processed
+function execute_build_pipeline() {
+    local game_id="$1"
+    local ui_name="$2"
+    shift 2
+    local derivatives=("$@")
 
+    ! build_targets_include "$game_id" && return 0
 
-## Blackmesa
-build_targets_include 'blackmesa' && {
-	ui_header1 "Blackmesa";
+    ui_header1 "$ui_name"
+    ui_header2 "Fetching LL $ui_name repos"
 
-	ui_header2 "Fetching LL Blackmesa repos";
-	(cd ./repos/ && ./reindex-blackmesa.sh) || fail_error "Fetch Blackmesa repos";
+    (cd ./repos/ && "./reindex-${game_id}.sh") || fail_error "Fetch $ui_name repos"
 
-	# base image
-	if [ "$option_skip_base" != 'true' ]; then
-		ui_header2 "Build gamesvr-blackmesa";
-		if [ "$option_delta_updates" = 'true' ]; then
-			(cd ./repos/lacledeslan/gamesvr-blackmesa && ./build.sh --delta);
-			report_build "gamesvr-blackmesa" "$?";
-		else
-			(cd ./repos/lacledeslan/gamesvr-blackmesa && ./build.sh);
-			report_build "gamesvr-blackmesa" "$?";
-		fi;
-	fi;
+    local base_image="gamesvr-${game_id}"
 
-	# derivative images
-	if builds_failed_includes 'gamesvr-blackmesa'; then
-		builds_aborted_add "gamesvr-blackmesa-freeplay";
-	else
-		ui_header2 "Build gamesvr-blackmesa-freeplay";
-		(cd ./repos/lacledeslan/gamesvr-blackmesa-freeplay && ./build.sh);
-		report_build "gamesvr-blackmesa-freeplay" "$?";
-	fi;
+    # 1. Base Build
+    if ! has_flow_option 'skip-base'; then
+        ui_header2 "Build $base_image"
+
+        # Note the '|| true' or explicit assignments bypass 'set -e' crashes, allowing report_build to catch it
+        local status=0
+        (cd "./repos/lacledeslan/$base_image" && ./build.sh "${build_options[@]}") || status=$?
+        report_build "$base_image" "$status"
+    fi
+
+    # 2. Dynamic Derivative Builds
+    local deriv
+    for deriv in "${derivatives[@]}"; do
+        local deriv_image="${base_image}-${deriv}"
+
+        if builds_failed_includes "$base_image"; then
+            ui_header2 "$deriv_image"
+            echo -e "Skipped (Base image failed).\n"
+            aborted_builds+=("$deriv_image")
+        else
+            ui_header2 "Build $deriv_image"
+            local status=0
+            (cd "./repos/lacledeslan/$deriv_image" && ./build.sh "${build_options[@]}") || status=$?
+            report_build "$deriv_image" "$status"
+        fi
+    done
 }
 
+# ==============================================================================
+# DECLARE GAMES AND THEIR DERIVATIVES HERE
+# ==============================================================================
+# Format: execute_build_pipeline "shortname" "UI Header Title" [derivatives...]
 
-## TF2
-build_targets_include 'tf2' && {
-	ui_header1 "TF2";
+execute_build_pipeline "7daysstodie"   "7 Days to Die"
+execute_build_pipeline "blackmesa"     "Blackmesa"       "freeplay"
+execute_build_pipeline "tf2"           "TF2"             "freeplay"
+execute_build_pipeline "tf2classified" "TF2 Classified"  "freeplay"
 
-	ui_header2 "Fetching LL TF2 repos";
-	(cd ./repos/ && ./reindex-tf2.sh) || fail_error "Fetch TF2 repos";
-
-	if [ "$option_skip_base" != 'true' ]; then
-		ui_header2 "Build gamesvr-tf2";
-		if [ "$option_delta_updates" = 'true' ]; then
-			(cd ./repos/lacledeslan/gamesvr-tf2 && ./build.sh --delta)
-			report_build "gamesvr-tf2" "$?";
-		else
-			(cd ./repos/lacledeslan/gamesvr-tf2 && ./build.sh)
-			report_build "gamesvr-tf2" "$?";
-		fi;
-	fi;
-
-	if builds_failed_includes "gamesvr-tf2"; then
-		builds_aborted_add "gamesvr-tf2-freeplay"
-	else
-		ui_header2 "Build gamesvr-tf2";
-		(cd ./repos/lacledeslan/gamesvr-tf2-freeplay && ./build.sh)
-		report_build "gamesvr-tf2-freeplay" "$?";
-	fi;
-}
-
-
-## TF2 Classic
-build_targets_include 'tf2classic' && {
-	ui_header1 "TF2 Classic";
-
-	ui_header2 "Fetching LL TF2 Classic repos";
-	(cd ./repos/ && ./reindex-tf2classic.sh) || fail_error "Fetch TF2 Classic repos";
-
-	if [ "$option_skip_base" != 'true' ]; then
-		ui_header2 "Build gamesvr-tf2classic";
-		(cd ./repos/lacledeslan/gamesvr-tf2classic && ./build.sh)
-		report_build "gamesvr-tf2classic" "$?";
-	fi;
-
-	if builds_failed_includes "gamesvr-tf2classic"; then
-		builds_aborted_add "gamesvr-tf2classic-freeplay"
-	else
-		ui_header2 "Build gamesvr-tf2classic-freeplay";
-		(cd ./repos/lacledeslan/gamesvr-tf2classic-freeplay && ./build.sh)
-		report_build "gamesvr-tf2classic-freeplay" "$?";
-	fi;
-}
-
+# ==============================================================================
 
 ####################################################################################################
 ## Report results
 ####################################################################################################
 
-ui_header1 "Results for \"$LL_GAMESVR_BLD_COMMAND\"";
+ui_header1 "Results for \"$LL_GAMESVR_BLD_COMMAND\""
 
-echo -e "\nScript version: $(git rev-parse --short HEAD)";
-echo -e "Script completed in $(($(date +%s) - "$LL_GAMESVR_BLD_START_TIME")) seconds.\n";
+echo -e "\nScript version: $(git rev-parse --short HEAD)"
+echo -e "Script completed in $(($(date +%s) - "$LL_GAMESVR_BLD_START_TIME")) seconds.\n"
 
-if (( ${#builds_completed[@]} )); then
-	printf -v joined '%s, ' "${builds_completed[@]}";
-	echo -e "Successful builds: ${joined%,}";
-fi
+[[ ${#completed_builds[@]} -gt 0 ]] && echo -e "Successful builds: $(join_by ', ' "${completed_builds[@]}")"
+[[ ${#failed_builds[@]} -gt 0 ]]    && echo -e "Failed builds:     $(join_by ', ' "${failed_builds[@]}")"
+[[ ${#aborted_builds[@]} -gt 0 ]]   && echo -e "Aborted builds:    $(join_by ', ' "${aborted_builds[@]}")"
 
-if (( ${#builds_failed[@]} )); then
-	printf -v joined '%s, ' "${builds_failed[@]}";
-	echo -e "Failed builds: ${joined%,}";
-fi
+echo -e "\n\n"
 
-if (( ${#builds_aborted[@]} )); then
-printf -v joined '%s, ' "${builds_aborted[@]}";
-	echo -e "Aborted builds: ${joined%,}";
-fi
-
-echo -e "\n\n";
-
-if (( ${#builds_failed[@]} )) || (( ${#builds_aborted[@]} )); then
-	exit 1;
+if [[ ${#failed_builds[@]} -gt 0 ]] || [[ ${#aborted_builds[@]} -gt 0 ]]; then
+    exit 1
 else
-	exit 0;
+    exit 0
 fi
