@@ -35,8 +35,6 @@ git_clone "https://github.com/LacledesLAN/gamesvr-minecraft-challenge1" "./lacle
 git_clone "https://github.com/LacledesLAN/gamesvr-minecraft-challenge2" "./lacledeslan/gamesvr-minecraft-challenge2"
 git_clone "https://github.com/LacledesLAN/gamesvr-minecraft-challenge3" "./lacledeslan/gamesvr-minecraft-challenge3"
 git_clone "https://github.com/LacledesLAN/gamesvr-satisfactory" "./lacledeslan/gamesvr-satisfactory"
-git_clone "https://github.com/LacledesLAN/gamesvr-quake2" "./lacledeslan/gamesvr-quake2"
-git_clone "https://github.com/LacledesLAN/gamesvr-quake2-freeplay" "./lacledeslan/gamesvr-quake2-freeplay"
 ./reindex-tf2.sh
 ./reindex-tf2classified.sh
 git_clone "https://github.com/LacledesLAN/gamesvr-ut99" "./lacledeslan/gamesvr-ut99"

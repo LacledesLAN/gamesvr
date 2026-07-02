@@ -2,6 +2,7 @@
     "cSpell.words": [
         "blackmesa",
         "daysstodie",
+        "daystodie",
         "freeplay",
         "gamesvr",
         "laclede",
@@ -10,7 +11,8 @@
         "lacledeslan",
         "reindex",
         "steamcmd",
-        "tf2"
+        "tf2",
+        "trixie"
     ],
     "files.exclude": {
         "**/.git": true,

@@ -42,7 +42,7 @@ do
         --no-base|--skip-base)       flow_options+=('skip-base') ;;
 
         # Build targets aliases map cleanly to their core folder names
-        --7days|--7daysstodie)       build_targets+=('7daysstodie') ;;
+        --7days|--7daystodie)       build_targets+=('7daystodie') ;;
         --blackmesa)                 build_targets+=('blackmesa') ;;
         --tf2)                       build_targets+=('tf2') ;;
         --tf2c|--tf2classified)      build_targets+=('tf2classified') ;;
@@ -262,7 +262,7 @@ function execute_build_pipeline() {
 # ==============================================================================
 # Format: execute_build_pipeline "shortname" "UI Header Title" [derivatives...]
 
-execute_build_pipeline "7daysstodie"   "7 Days to Die"
+execute_build_pipeline "7daystodie"   "7 Days to Die"
 execute_build_pipeline "blackmesa"     "Blackmesa"       "freeplay"
 execute_build_pipeline "tf2"           "TF2"             "freeplay"
 execute_build_pipeline "tf2classified" "TF2 Classified"  "freeplay"
