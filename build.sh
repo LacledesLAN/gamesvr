@@ -7,7 +7,7 @@ set -euo pipefail
 ## Environment
 ####################################################################################################
 
-source "$( cd "${BASH_SOURCE[0]%/*}" && pwd )/bin/linux/funcs.sh"
+source "$( cd "${BASH_SOURCE[0]%/*}" && pwd )/bin/funcs.sh"
 LL_GAMESVR_BLD_COMMAND="$0 $*"
 LL_GAMESVR_BLD_START_TIME=$(date +%s)
 
@@ -225,7 +225,8 @@ function execute_build_pipeline() {
     ui_header1 "$ui_name"
     ui_header2 "Fetching LL $ui_name repos"
 
-    (cd ./repos/ && "./reindex-${game_id}.sh") || fail_error "Fetch $ui_name repos"
+
+    (cd ./bin/ && "./reindex-${game_id}.sh") || fail_error "Fetch $ui_name repos"
 
     local base_image="gamesvr-${game_id}"
 
@@ -251,7 +252,7 @@ function execute_build_pipeline() {
         else
             ui_header2 "Build $deriv_image"
             local status=0
-            (cd "./repos/lacledeslan/$deriv_image" && ./build.sh "${build_options[@]}") || status=$?
+            (cd "./repos/lacledeslan/$deriv_image" && ./build-"${base_image}-${deriv}".sh "${build_options[@]}") || status=$?
             report_build "$deriv_image" "$status"
         fi
     done

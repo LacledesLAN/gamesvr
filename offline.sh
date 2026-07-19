@@ -2,7 +2,7 @@
 set -e;
 set -u;
 
-source "$( cd "${BASH_SOURCE[0]%/*}" && pwd )/bin/linux/funcs.sh"
+source "$( cd "${BASH_SOURCE[0]%/*}" && pwd )/bin/funcs.sh"
 
 ui_header1 "Pull common Docker images"
 
