@@ -10,7 +10,7 @@ source "${SCRIPT_DIR}/../bin/linux/funcs.sh"
 #
 
 git_clone "https://github.com/LacledesLAN/gamesvr-tf2" "${SCRIPT_DIR}/lacledeslan/gamesvr-tf2"
-chmod +x "./lacledeslan/gamesvr-tf2/build.sh"
+chmod +x "./lacledeslan/gamesvr-tf2/build-gamesvr-tf2.sh"
 
 git_clone "https://github.com/LacledesLAN/gamesvr-tf2-freeplay" "${SCRIPT_DIR}/lacledeslan/gamesvr-tf2-freeplay"
-chmod +x "./lacledeslan/gamesvr-tf2-freeplay/build.sh"
+chmod +x "./lacledeslan/gamesvr-tf2-freeplay/build-gamesvr-tf2-freeplay.sh"
