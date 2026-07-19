@@ -1,0 +1,19 @@
+{
+    "folders": [
+        {
+            "name": "gamesvr tools",
+            "path": "."
+        },
+        {
+            "name": "LacledesLAN repositories",
+            "path": "repos/lacledeslan"
+        }
+    ],
+    "settings": {
+        "files.exclude": {
+            "repos": true
+        },
+        "git.autoRepositoryDetection": "subFolders",
+        "git.repositoryScanMaxDepth": 2
+    }
+}

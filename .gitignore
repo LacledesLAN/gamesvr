@@ -39,6 +39,7 @@
 .ionide
 .vscode/*.code-snippets
 *.code-workspace
+!gamesvr.code-workspace
 
 
 ### Windows Cruft ###

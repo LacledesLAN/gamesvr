@@ -5,6 +5,15 @@ This repo contains scripts and assets for working with Laclede's LAN game server
 * It maintains a list of all Laclede's LAN game server repos, and can fetch them to a local machine.
 * It can build Laclede's LAN game servers that are not built via Github actions.
 
+## VS Code Workspace
+
+Open `gamesvr.code-workspace` in VS Code to work with this project and all repositories under
+`repos/lacledeslan`, `repos/alliedmodders`, and `repos/splewis` in one window. Each nested Git repository is
+detected independently in the Source Control view, so branches, commits, pulls, and pushes remain separate.
+
+Run `./bin/reindex-all.sh` before opening the workspace to fetch any missing repositories. Repositories cloned
+later are detected automatically.
+
 ## `build.sh`
 
 Builds Laclede's LAN game server that are not built via Github actions.
