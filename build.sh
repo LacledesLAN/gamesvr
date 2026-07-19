@@ -42,7 +42,7 @@ do
         --no-base|--skip-base)       flow_options+=('skip-base') ;;
 
         # Build targets aliases map cleanly to their core folder names
-        --7days|--7daystodie)       build_targets+=('7daystodie') ;;
+        --7days|--7daystodie)        build_targets+=('7daystodie') ;;
         --blackmesa)                 build_targets+=('blackmesa') ;;
         --tf2)                       build_targets+=('tf2') ;;
         --tf2c|--tf2classified)      build_targets+=('tf2classified') ;;
@@ -235,7 +235,7 @@ function execute_build_pipeline() {
 
         # Note the '|| true' or explicit assignments bypass 'set -e' crashes, allowing report_build to catch it
         local status=0
-        (cd "./repos/lacledeslan/$base_image" && ./build.sh "${build_options[@]}") || status=$?
+        (cd "./repos/lacledeslan/$base_image" && "./build-${base_image}.sh" "${build_options[@]}") || status=$?
         report_build "$base_image" "$status"
     fi
 

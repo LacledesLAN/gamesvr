@@ -52,7 +52,7 @@ function git_clone() {
     then
         # PATH_DESTINATION exists
         if [[ $(git -C "$PATH_DESTINATION" diff --stat) != '' ]]; then
-            echo "[$2] - Cannot update - has uncommitted changes!"
+            echo "[$2] - Cannot update local repo as it has uncommitted changes!"
 
 			for i in {6..1}
 			do

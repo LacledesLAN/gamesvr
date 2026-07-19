@@ -1,8 +1,9 @@
 # Laclede's LAN Game Server Build Script
 
-This repo is for building out [Laclede's LAN Game
-Servers](https://github.com/LacledesLAN/README.1ST/tree/master/GameServers); particularly those that can't be built in
-CI/CD cloud offerings.
+This repo contains scripts and assets for working with Laclede's LAN game servers.
+
+* It maintains a list of all Laclede's LAN game server repos, and can fetch them to a local machine.
+* It can build Laclede's LAN game servers that are not built via Github actions.
 
 ## `build.sh`
 
