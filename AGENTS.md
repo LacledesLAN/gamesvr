@@ -25,7 +25,7 @@ Game server repositories contain the necessary files to build, test, and publish
 
 Each repository represents a "level" of the game server.
 
-* Level one represents the stock game server itself, with no modifications, and any necessary dependencies for the game 
+* Level one represents the stock game server itself, with no modifications, and any necessary dependencies for the game
   server to execute. For example `gamesvr-<game_name>` would be a level one image for the game server `<game_name>`.
   * If a build script is included, it must be named `build-<game_name>.sh` and be located in the root of the repo.
   * The test script must be named `test-<game_name>.sh` and be located in the root of the repo.
@@ -65,12 +65,32 @@ optionally include a build script for local use, following the same conventions.
 * Multistage builds should be used to reduce the size of the final image, and to ensure that only necessary files are
   included in the final image.
 * The final image should be as small as possible, and should not include any unnecessary files or dependencies.
-* When possible, the final image should use UTF-8 as the default locale and should include any necessary packages to 
+* When possible, the final image should use UTF-8 as the default locale and should include any necessary packages to
   support UTF-8.
+* Dockerfiles may specify an alternative escape character (e.g. `# escape=`) for any builds targetting the Microsoft
+  Windows operating system. All other Dockerfile should stick to the default.
+
+#### Build Arguments
+
+* No unused ARGs are allowed.
+* Build arguments may be placed:
+  * Before any `FROM` instructions, for build arguments that are used in the `FROM`
+    instruction(s).
+  * After the `FROM` instruction, for build arguments that are used in the build process
+
+#### Formatting
+
+* In multi-stage builds, all but the first FROM instruction must:
+  * Be proceeded by a comment separator of `#---------------------------------` with two blank lines before the comment.
+* There must be at least one blank line between instructions.
+* 4 spaces must be used for indentations.
+* There must always be at least one space character ahead of any trailing line continuation character (`\`).
 
 #### Labels
 
-* All labels should be applied via a single `LABEL` instruction in the Dockerfile.
+* All labels should be applied via a single `LABEL` instruction in the Dockerfile, with each value on a separated line
+  using the line continuation character (`\`). Each subsequent line should be indented with 4 spaces, and the last line
+  should not have a line continuation character.
 * Dockerfiles must include the following labels for the final image:
   * `architecture` - The architecture of the image (by default `amd64`).
   * `com.lacledeslan.build-node` - The name of the host system that built the image.

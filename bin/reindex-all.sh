@@ -33,6 +33,8 @@ git_clone "https://github.com/LacledesLAN/gamesvr-goldsource-dmc" "${REPOS_DIR}/
 git_clone "https://github.com/LacledesLAN/gamesvr-goldsource-hldm" "${REPOS_DIR}/lacledeslan/gamesvr-goldsource-hldm"
 git_clone "https://github.com/LacledesLAN/gamesvr-goldsource-tfc" "${REPOS_DIR}/lacledeslan/gamesvr-goldsource-tfc"
 git_clone "https://github.com/LacledesLAN/gamesvr-hl2dm" "${REPOS_DIR}/lacledeslan/gamesvr-hl2dm"
+git_clone "https://github.com/LacledesLAN/gamesvr-hl2dm-freeplay" "${REPOS_DIR}/lacledeslan/gamesvr-hl2dm-freeplay"
+git_clone "https://github.com/LacledesLAN/gamesvr-hldms" "${REPOS_DIR}/lacledeslan/gamesvr-hldms"
 git_clone "https://github.com/LacledesLAN/gamesvr-hldms-freeplay" "${REPOS_DIR}/lacledeslan/gamesvr-hldms-freeplay"
 git_clone "https://github.com/LacledesLAN/gamesvr-ioquake3" "${REPOS_DIR}/lacledeslan/gamesvr-ioquake3"
 git_clone "https://github.com/LacledesLAN/gamesvr-ioquake3-freeplay" "${REPOS_DIR}/lacledeslan/gamesvr-ioquake3-freeplay"
