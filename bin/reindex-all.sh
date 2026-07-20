@@ -6,6 +6,7 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 REPOS_DIR="${SCRIPT_DIR}/../repos"
 source "${SCRIPT_DIR}/funcs.sh"
 
+mkdir -p "${REPOS_DIR}/gameservers"
 
 #
 # Fetch all repos used by Lacledes LAN dedicated gameservers

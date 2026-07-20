@@ -21,6 +21,7 @@ Dockerfile*         text
 LICENSE             text
 
 *.7z                binary
+*.avif              binary
 *.bmp               binary
 *.docx              binary diff=astextplain
 *.gif               binary
