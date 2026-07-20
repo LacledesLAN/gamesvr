@@ -10,8 +10,8 @@ source "${SCRIPT_DIR}/funcs.sh"
 # Fetch all Laclede's LAN repos used by TF2 dedicated servers
 #
 
-git_clone "https://github.com/LacledesLAN/gamesvr-tf2" "${REPOS_DIR}/lacledeslan/gamesvr-tf2"
-chmod +x "${REPOS_DIR}/lacledeslan/gamesvr-tf2/build-gamesvr-tf2.sh"
+git_clone "https://github.com/LacledesLAN/gamesvr-tf2" "${REPOS_DIR}/gameservers/gamesvr-tf2"
+chmod +x "${REPOS_DIR}/gameservers/gamesvr-tf2/build-gamesvr-tf2.sh"
 
-git_clone "https://github.com/LacledesLAN/gamesvr-tf2-freeplay" "${REPOS_DIR}/lacledeslan/gamesvr-tf2-freeplay"
-chmod +x "${REPOS_DIR}/lacledeslan/gamesvr-tf2-freeplay/build-gamesvr-tf2-freeplay.sh"
+git_clone "https://github.com/LacledesLAN/gamesvr-tf2-freeplay" "${REPOS_DIR}/gameservers/gamesvr-tf2-freeplay"
+chmod +x "${REPOS_DIR}/gameservers/gamesvr-tf2-freeplay/build-gamesvr-tf2-freeplay.sh"

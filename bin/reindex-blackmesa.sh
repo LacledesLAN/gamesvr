@@ -10,8 +10,8 @@ source "${SCRIPT_DIR}/funcs.sh"
 # Fetch all Laclede's LAN repos used by Blackmesa dedicated servers
 #
 
-git_clone "https://github.com/LacledesLAN/gamesvr-blackmesa" "${REPOS_DIR}/lacledeslan/gamesvr-blackmesa"
-chmod +x "${REPOS_DIR}/lacledeslan/gamesvr-blackmesa/build-gamesvr-blackmesa.sh"
+git_clone "https://github.com/LacledesLAN/gamesvr-blackmesa" "${REPOS_DIR}/gameservers/gamesvr-blackmesa"
+chmod +x "${REPOS_DIR}/gameservers/gamesvr-blackmesa/build-gamesvr-blackmesa.sh"
 
-git_clone "https://github.com/LacledesLAN/gamesvr-blackmesa-freeplay" "${REPOS_DIR}/lacledeslan/gamesvr-blackmesa-freeplay"
-chmod +x "${REPOS_DIR}/lacledeslan/gamesvr-blackmesa-freeplay/build-gamesvr-blackmesa-freeplay.sh"
+git_clone "https://github.com/LacledesLAN/gamesvr-blackmesa-freeplay" "${REPOS_DIR}/gameservers/gamesvr-blackmesa-freeplay"
+chmod +x "${REPOS_DIR}/gameservers/gamesvr-blackmesa-freeplay/build-gamesvr-blackmesa-freeplay.sh"

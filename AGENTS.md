@@ -73,29 +73,39 @@ optionally include a build script for local use, following the same conventions.
 #### Build Arguments
 
 * No unused ARGs are allowed.
+* Build args should be UPPERCASE with underscores, and should be descriptive of their purpose.
 * Build arguments may be placed:
   * Before any `FROM` instructions, for build arguments that are used in the `FROM`
     instruction(s).
   * After the `FROM` instruction, for build arguments that are used in the build process
+* Multiple build arguments should use a single ARG instruction, with each value on a separated line using the line
+  continuation character (`\`). Each subsequent line should be indented with 4 spaces, and the last line should not have
+  a line continuation character.
+* For each ARG instruction, arguments should be arranged alphabetically, by key, sorted in ascending order.
 
 #### Formatting
 
 * In multi-stage builds, all but the first FROM instruction must:
-  * Be proceeded by a comment separator of `#---------------------------------` with two blank lines before the comment.
+  * Be proceeded by two blank lines, followed by a comment separator of `#---------------------------------`. There must
+    not be a blank line between the comment and the matching FROM instruction.
 * There must be at least one blank line between instructions.
-* 4 spaces must be used for indentations.
+  * Comments may appear before an instruction, without a blank line between the comment and the instruction.
 * There must always be at least one space character ahead of any trailing line continuation character (`\`).
 
 #### Labels
 
 * All labels should be applied via a single `LABEL` instruction in the Dockerfile, with each value on a separated line
-  using the line continuation character (`\`). Each subsequent line should be indented with 4 spaces, and the last line
+  using the line continuation character (`\`). Each subsequent line should be indented with 6 spaces, and the last line
   should not have a line continuation character.
+* All label keys should be arranged alphabetically, sorted in ascending order.
 * Dockerfiles must include the following labels for the final image:
   * `architecture` - The architecture of the image (by default `amd64`).
   * `com.lacledeslan.build-node` - The name of the host system that built the image.
     * ARG `BUILD_NODE` should be used to pass this value with a default value of `unspecified`.
   * `maintainer` - The maintainer of the image (by default `Laclede's LAN <contact@lacledeslan.com>`).
+  * `org.opencontainers.image.created` - The time the image was created in RFC 3339 formatted date-time string
+    (e.g., YYYY-MM-DDTHH:MM:SSZ).
+    * ARG `BUILD_DATE` should be used to pass this value with a default value of `unspecified`.
   * `org.opencontainers.image.description` - A description of the image (e.g. `<gamename> Dedicated Server`).
   * `org.opencontainers.image.revision` - The revision of the image (e.g. `git rev-parse HEAD`).
     * ARG `GIT_REVISION` should be used to pass the git revision to the Dockerfile (default `unspecified`):
