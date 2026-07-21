@@ -14,9 +14,17 @@
             "repos/gameservers": true
         },
         "git.autoRepositoryDetection": "subFolders",
-        "git.repositoryScanMaxDepth": 2,
+        "git.detectSubmodules": false,
+        "git.repositoryScanMaxDepth": 1,
+        "git.repositoryScanIgnoredFolders": [
+            "node_modules",
+            "repos"
+        ],
         "chat.tools.terminal.autoApprove": {
-            "printf": true
+            "printf": true,
+            "jq": true,
+            "code": true,
+            "awk": true
         }
     }
 }
