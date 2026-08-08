@@ -236,7 +236,7 @@ function execute_build_pipeline() {
 
         # Note the '|| true' or explicit assignments bypass 'set -e' crashes, allowing report_build to catch it
         local status=0
-        (cd "./repos/lacledeslan/$base_image" && "./build-${base_image}.sh" "${build_options[@]}") || status=$?
+        (cd "./repos/gameservers/$base_image" && "./build-${base_image}.sh" "${build_options[@]}") || status=$?
         report_build "$base_image" "$status"
     fi
 

@@ -8,9 +8,8 @@ source "${SCRIPT_DIR}/funcs.sh"
 
 mkdir -p "${REPOS_DIR}/gameservers"
 
-#
-# Fetch all repos used by Lacledes LAN dedicated gameservers
-#
+printf '# Repository reindex\n\n'
+printf '## Game servers\n\n'
 
 # LL Game Server Repos
 chmod +x "${SCRIPT_DIR}/reindex-7daystodie.sh"
@@ -41,6 +40,7 @@ git_clone "https://github.com/LacledesLAN/gamesvr-ioquake3" "${REPOS_DIR}/gamese
 git_clone "https://github.com/LacledesLAN/gamesvr-ioquake3-freeplay" "${REPOS_DIR}/gameservers/gamesvr-ioquake3-freeplay"
 git_clone "https://github.com/LacledesLAN/gamesvr-jk2outcast" "${REPOS_DIR}/gameservers/gamesvr-jk2outcast"
 git_clone "https://github.com/LacledesLAN/gamesvr-jk2outcast-freeplay" "${REPOS_DIR}/gameservers/gamesvr-jk2outcast-freeplay"
+git_clone "https://github.com/LacledesLAN/gamesvr-pzomboid/" "${REPOS_DIR}/gameservers/gamesvr-pzomboid"
 git_clone "https://github.com/LacledesLAN/gamesvr-minecraft" "${REPOS_DIR}/archived/gamesvr-minecraft"
 git_clone "https://github.com/LacledesLAN/gamesvr-minecraft-challenge1" "${REPOS_DIR}/archived/gamesvr-minecraft-challenge1"
 git_clone "https://github.com/LacledesLAN/gamesvr-minecraft-challenge2" "${REPOS_DIR}/archived/gamesvr-minecraft-challenge2"
@@ -62,18 +62,23 @@ git_clone "https://github.com/LacledesLAN/gamesvr-warsow" "${REPOS_DIR}/gameserv
 git_clone "https://github.com/LacledesLAN/gamesvr-warsow-freeplay" "${REPOS_DIR}/gameservers/gamesvr-warsow-freeplay"
 
 # LL Documentation & Utility Repos
+printf '\n## Documentation and utilities\n\n'
 git_clone "https://github.com/LacledesLAN/get5-cli" "${REPOS_DIR}/lacledeslan/get5-cli"
 git_clone "https://github.com/LacledesLAN/README.1ST" "${REPOS_DIR}/lacledeslan/README.1ST"
 git_clone "https://github.com/LacledesLAN/ReferenceLogs" "${REPOS_DIR}/lacledeslan/ReferenceLogs"
 git_clone "https://github.com/LacledesLAN/SteamCMD" "${REPOS_DIR}/lacledeslan/SteamCMD"
 
 # LL Dependency Mirrors
+printf '\n## Dependency mirrors\n\n'
 git_clone "https://github.com/LacledesLAN/amxmodx" "${REPOS_DIR}/lacledeslan/amxmodx"
 git_clone "https://github.com/LacledesLAN/sourcemod.linux" "${REPOS_DIR}/lacledeslan/sourcemod.linux"
 git_clone "https://github.com/LacledesLAN/sourcemod-configs" "${REPOS_DIR}/lacledeslan/sourcemod-configs"
 
 # 3rd Party Sources
+printf '\n## Third-party sources\n\n'
 git_clone "https://github.com/alliedmodders/amxmodx" "${REPOS_DIR}/alliedmodders/amxmodx"
 git_clone "https://github.com/alliedmodders/metamod-source" "${REPOS_DIR}/alliedmodders/metamod-source"
 git_clone "https://github.com/alliedmodders/sourcemod" "${REPOS_DIR}/alliedmodders/sourcemod"
 git_clone "https://github.com/splewis/get5" "${REPOS_DIR}/splewis/get5"
+
+printf '\n**Reindex complete.**\n'

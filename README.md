@@ -62,6 +62,12 @@ Download Laclede's LAN game server assets, so that they can be used offline.
 ./offline.sh
 ```
 
+## Repository Reindex Output
+
+Each repository operation is emitted as a Markdown `### organization/repository` section. The section reports
+whether the local directory was created and cloned, was already up to date, or was fast-forwarded. It includes
+the upstream branch and revision, together with commit and tracked-file counts or fast-forward change statistics.
+
 ## General Behaviors
 
-* If a local game server repo is `dirty`, its contents will *not* be updated.
+* If a local game server repo has uncommitted changes, reindexing stops with an error and does not update that repository.
