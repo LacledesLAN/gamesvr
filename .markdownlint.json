@@ -20,6 +20,7 @@
     "MD029": {
         "style": "ordered"
     },
+    "MD034": false,
     "MD035": {
         "style": "---"
     },
@@ -52,7 +53,10 @@
         "collapsed": false,
         "shortcut": false
     },
-        "MD055": {
+    "MD055": {
         "style": "leading_and_trailing"
+    },
+    "MD060": {
+        "style": "aligned"
     }
 }

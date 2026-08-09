@@ -19,8 +19,15 @@
         "**/.DS_Store": true,
         "**/Thumbs.db": true
     },
-    "markdownlint.ignore": [
-        "LICENSE"
+    "markdownlint.lintWorkspaceGlobs": [
+        "**/*.{md,mkd,mdwn,mdown,markdown,markdn,mdtxt,mdtext,workbook}",
+        "!**/*.code-search",
+        "!**/bower_components",
+        "!**/node_modules",
+        "!**/.git",
+        "!**/vendor",
+        "!LICENSE",
+        "!repos/**"
     ],
     "shellcheck.exclude": ["1091"],
     "search.exclude": {

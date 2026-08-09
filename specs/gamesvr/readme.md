@@ -3,7 +3,7 @@
 Game server repositories contain the necessary files to build, test, and publish a game server. These repos:
 
 * must start with `gamesvr-` in the repo name.
-* build one or more docker images, with the goal of running a game server for a specific game.
+* build one or more Docker images, with the goal of running a game server for a specific game.
 * must have a `README.md` file in the root of the repo.
 * must have a `LICENSE` file in the root of the repo.
 * must have a `CODE_OF_CONDUCT.md` file in the root of the repo.
@@ -30,7 +30,7 @@ Each repository represents a "level" of the game server.
 ## Build Scripts
 
 If a game server is not built in the cloud (e.g. GitHub Actions), it must include a build script that can be run
-locally to build, test, and push the docker image to the cloud. Game server repos that are built in the cloud may
+locally to build, test, and push the Docker image to the cloud. Game server repos that are built in the cloud may
 optionally include a build script for local use, following the same conventions.
 
 * Must be executable shell scripts located in the root of the repo.
