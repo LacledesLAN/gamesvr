@@ -252,7 +252,7 @@ function execute_build_pipeline() {
         else
             ui_header2 "Build $deriv_image"
             local status=0
-            (cd "./repos/lacledeslan/$deriv_image" && ./build-"${base_image}-${deriv}".sh "${build_options[@]}") || status=$?
+            (cd "./repos/gameservers/$deriv_image" && ./build-"${base_image}-${deriv}".sh "${build_options[@]}") || status=$?
             report_build "$deriv_image" "$status"
         fi
     done
