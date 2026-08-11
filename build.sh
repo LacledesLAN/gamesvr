@@ -9,6 +9,8 @@ set -euo pipefail
 
 GAMESVR_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 source "${GAMESVR_ROOT}/bin/funcs.sh"
+require_command git
+require_command docker
 LL_GAMESVR_BLD_COMMAND="$0 $*"
 LL_GAMESVR_BLD_START_TIME=$(date +%s)
 
@@ -162,13 +164,6 @@ sigterm_handler() {
 ####################################################################################################
 ## Preflight Checks
 ####################################################################################################
-
-for cmd in git docker; do
-    if ! command -v "$cmd" &> /dev/null; then
-        printf "ERROR: %s is not installed or not in your PATH.\n" "${cmd^}" >&2
-        exit 1
-    fi
-done
 
 if ! docker info &> /dev/null; then
     printf "ERROR: Docker is installed, but the current user cannot access the Docker daemon.\n" >&2

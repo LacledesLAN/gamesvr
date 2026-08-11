@@ -1,10 +1,10 @@
 #!/bin/bash
-set -e;
-set -u;
+set -euo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 REPOS_DIR="${SCRIPT_DIR}/../repos"
 source "${SCRIPT_DIR}/funcs.sh"
+require_command git
 
 mkdir -p "${REPOS_DIR}/gameservers"
 

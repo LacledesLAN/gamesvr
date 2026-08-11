@@ -3,6 +3,7 @@ set -euo pipefail
 
 GAMESVR_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 source "${GAMESVR_ROOT}/bin/funcs.sh"
+require_command docker
 
 ui_header1 "Pull common Docker images"
 
