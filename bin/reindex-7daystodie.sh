@@ -13,4 +13,4 @@ mkdir -p "${REPOS_DIR}/gameservers"
 #
 
 git_clone "https://github.com/LacledesLAN/gamesvr-7daystodie" "${REPOS_DIR}/gameservers/gamesvr-7daystodie"
-chmod +x "${REPOS_DIR}/gameservers/gamesvr-7daystodie/build-gamesvr-7daystodie.sh"
+require_executable "${REPOS_DIR}/gameservers/gamesvr-7daystodie/build-gamesvr-7daystodie.sh"

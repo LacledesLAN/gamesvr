@@ -136,6 +136,21 @@ function git_clone() {
     fi
 }
 
+function require_executable() {
+    local script_path="${1:-}"
+
+    if [[ ! -f "$script_path" ]]; then
+        printf 'ERROR: Required script does not exist: %s\n' "$script_path" >&2
+        exit 1
+    fi
+
+    if [[ ! -x "$script_path" ]]; then
+        printf 'ERROR: Required script is not executable: %s\n' "$script_path" >&2
+        printf 'Commit the executable mode to its Git repository before retrying.\n' >&2
+        exit 1
+    fi
+}
+
 
 ################################################################################
 ## user interface functions

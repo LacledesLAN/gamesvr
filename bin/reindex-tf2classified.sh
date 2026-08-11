@@ -13,7 +13,7 @@ mkdir -p "${REPOS_DIR}/gameservers"
 #
 
 git_clone "https://github.com/LacledesLAN/gamesvr-tf2classified" "${REPOS_DIR}/gameservers/gamesvr-tf2classified"
-chmod +x "${REPOS_DIR}/gameservers/gamesvr-tf2classified/build-gamesvr-tf2classified.sh"
+require_executable "${REPOS_DIR}/gameservers/gamesvr-tf2classified/build-gamesvr-tf2classified.sh"
 
 git_clone "https://github.com/LacledesLAN/gamesvr-tf2classified-freeplay" "${REPOS_DIR}/gameservers/gamesvr-tf2classified-freeplay"
-chmod +x "${REPOS_DIR}/gameservers/gamesvr-tf2classified-freeplay/build-gamesvr-tf2classified-freeplay.sh"
+require_executable "${REPOS_DIR}/gameservers/gamesvr-tf2classified-freeplay/build-gamesvr-tf2classified-freeplay.sh"

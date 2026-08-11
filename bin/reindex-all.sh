@@ -12,10 +12,10 @@ printf '# Repository reindex\n\n'
 printf '## Game servers\n\n'
 
 # LL Game Server Repos
-chmod +x "${SCRIPT_DIR}/reindex-7daystodie.sh"
+require_executable "${SCRIPT_DIR}/reindex-7daystodie.sh"
 "${SCRIPT_DIR}/reindex-7daystodie.sh"
 
-chmod +x "${SCRIPT_DIR}/reindex-blackmesa.sh"
+require_executable "${SCRIPT_DIR}/reindex-blackmesa.sh"
 "${SCRIPT_DIR}/reindex-blackmesa.sh"
 
 git_clone "https://github.com/LacledesLAN/gamesvr-cs2d" "${REPOS_DIR}/gameservers/gamesvr-cs2d"
@@ -47,10 +47,10 @@ git_clone "https://github.com/LacledesLAN/gamesvr-minecraft-challenge2" "${REPOS
 git_clone "https://github.com/LacledesLAN/gamesvr-minecraft-challenge3" "${REPOS_DIR}/archived/gamesvr-minecraft-challenge3"
 git_clone "https://github.com/LacledesLAN/gamesvr-satisfactory" "${REPOS_DIR}/gameservers/gamesvr-satisfactory"
 
-chmod +x "${SCRIPT_DIR}/reindex-tf2.sh"
+require_executable "${SCRIPT_DIR}/reindex-tf2.sh"
 "${SCRIPT_DIR}/reindex-tf2.sh"
 
-chmod +x "${SCRIPT_DIR}/reindex-tf2classified.sh"
+require_executable "${SCRIPT_DIR}/reindex-tf2classified.sh"
 "${SCRIPT_DIR}/reindex-tf2classified.sh"
 
 git_clone "https://github.com/LacledesLAN/gamesvr-ut99" "${REPOS_DIR}/gameservers/gamesvr-ut99"

@@ -1,6 +1,5 @@
 #!/bin/bash
-set -e;
-set -u;
+set -euo pipefail
 
 source "$( cd "${BASH_SOURCE[0]%/*}" && pwd )/bin/funcs.sh"
 

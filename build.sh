@@ -180,15 +180,6 @@ if has_flow_option 'skip-base'; then
     echo -e "Skipping base image builds.\n"
 fi
 
-# Ensure all scripts are executable
-for script in "$(pwd)/repos/"*.sh; do
-    [ -e "$script" ] || continue
-    if [ ! -x "$script" ]; then
-        chmod +x "$script"
-        echo "Made $script executable"
-    fi
-done
-
 ####################################################################################################
 ## Build Engine
 ####################################################################################################

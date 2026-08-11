@@ -13,7 +13,7 @@ mkdir -p "${REPOS_DIR}/gameservers"
 #
 
 git_clone "https://github.com/LacledesLAN/gamesvr-blackmesa" "${REPOS_DIR}/gameservers/gamesvr-blackmesa"
-chmod +x "${REPOS_DIR}/gameservers/gamesvr-blackmesa/build-gamesvr-blackmesa.sh"
+require_executable "${REPOS_DIR}/gameservers/gamesvr-blackmesa/build-gamesvr-blackmesa.sh"
 
 git_clone "https://github.com/LacledesLAN/gamesvr-blackmesa-freeplay" "${REPOS_DIR}/gameservers/gamesvr-blackmesa-freeplay"
-chmod +x "${REPOS_DIR}/gameservers/gamesvr-blackmesa-freeplay/build-gamesvr-blackmesa-freeplay.sh"
+require_executable "${REPOS_DIR}/gameservers/gamesvr-blackmesa-freeplay/build-gamesvr-blackmesa-freeplay.sh"
