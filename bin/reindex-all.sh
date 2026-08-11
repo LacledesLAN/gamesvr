@@ -79,6 +79,8 @@ printf '\n## Third-party sources\n\n'
 git_clone "https://github.com/alliedmodders/amxmodx" "${REPOS_DIR}/alliedmodders/amxmodx"
 git_clone "https://github.com/alliedmodders/metamod-source" "${REPOS_DIR}/alliedmodders/metamod-source"
 git_clone "https://github.com/alliedmodders/sourcemod" "${REPOS_DIR}/alliedmodders/sourcemod"
+git_clone "https://github.com/ioquake/ioq3" "${REPOS_DIR}/ioquake/ioq3"
+git_clone "https://github.com/mvdevs/jk2mv" "${REPOS_DIR}/mvdevs/jk2mv"
 git_clone "https://github.com/splewis/get5" "${REPOS_DIR}/splewis/get5"
 
 printf '\n**Reindex complete.**\n'
