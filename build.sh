@@ -7,7 +7,8 @@ set -euo pipefail
 ## Environment
 ####################################################################################################
 
-source "$( cd "${BASH_SOURCE[0]%/*}" && pwd )/bin/funcs.sh"
+GAMESVR_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+source "${GAMESVR_ROOT}/bin/funcs.sh"
 LL_GAMESVR_BLD_COMMAND="$0 $*"
 LL_GAMESVR_BLD_START_TIME=$(date +%s)
 
@@ -216,8 +217,7 @@ function execute_build_pipeline() {
     ui_header1 "$ui_name"
     ui_header2 "Fetching LL $ui_name repos"
 
-
-    (cd ./bin/ && "./reindex-${game_id}.sh") || fail_error "Fetch $ui_name repos"
+    "${GAMESVR_ROOT}/bin/reindex-${game_id}.sh" || fail_error "Fetch $ui_name repos"
 
     local base_image="gamesvr-${game_id}"
 
@@ -227,7 +227,10 @@ function execute_build_pipeline() {
 
         # Note the '|| true' or explicit assignments bypass 'set -e' crashes, allowing report_build to catch it
         local status=0
-        (cd "./repos/gameservers/$base_image" && "./build-${base_image}.sh" "${build_options[@]}") || status=$?
+        (
+            cd -- "${GAMESVR_ROOT}/repos/gameservers/${base_image}"
+            "./build-${base_image}.sh" "${build_options[@]}"
+        ) || status=$?
         report_build "$base_image" "$status"
     fi
 
@@ -243,7 +246,10 @@ function execute_build_pipeline() {
         else
             ui_header2 "Build $deriv_image"
             local status=0
-            (cd "./repos/gameservers/$deriv_image" && ./build-"${base_image}-${deriv}".sh "${build_options[@]}") || status=$?
+            (
+                cd -- "${GAMESVR_ROOT}/repos/gameservers/${deriv_image}"
+                "./build-${deriv_image}.sh" "${build_options[@]}"
+            ) || status=$?
             report_build "$deriv_image" "$status"
         fi
     done
@@ -267,7 +273,7 @@ execute_build_pipeline "tf2classified" "TF2 Classified"  "freeplay"
 
 ui_header1 "Results for \"$LL_GAMESVR_BLD_COMMAND\""
 
-echo -e "\nScript version: $(git rev-parse --short HEAD)"
+echo -e "\nScript version: $(git -C "$GAMESVR_ROOT" rev-parse --short HEAD)"
 echo -e "Script completed in $(($(date +%s) - "$LL_GAMESVR_BLD_START_TIME")) seconds.\n"
 
 [[ ${#completed_builds[@]} -gt 0 ]] && echo -e "Successful builds: $(join_by ', ' "${completed_builds[@]}")"

@@ -1,7 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
-source "$( cd "${BASH_SOURCE[0]%/*}" && pwd )/bin/funcs.sh"
+GAMESVR_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+source "${GAMESVR_ROOT}/bin/funcs.sh"
 
 ui_header1 "Pull common Docker images"
 
@@ -14,4 +15,4 @@ docker pull lacledeslan/steamcmd:latest;
 
 ui_header1 "Cloning Laclede's LAN gamesvr repos (and related repos)";
 
-(cd ./repos/ && source reindex-all.sh)
+"${GAMESVR_ROOT}/bin/reindex-all.sh"
