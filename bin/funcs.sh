@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Fail rather than hang when tools Git credentials require interactive input.
+export GIT_TERMINAL_PROMPT=0
+
 ################################################################################
 ## git functions
 ################################################################################
