@@ -47,19 +47,20 @@ chosen.
 | Argument                  | Description                                                                                                  |
 | :------------------------ | :----------------------------------------------------------------------------------------------------------- |
 | `--delta`                 | Build 'base' images, using delta layers, when possible. Use when registry bandwidth is a concern.            |
-| `--delete-built-image`    | Deletes the Docker image after a successful build to save local disk space when pushing to registries.       |
+| `--delete-built-image`    | Deletes every image tag reported by selected repository builds after all dependents have been processed.     |
 | `--enable-steamcmd-cache` | Enables SteamCMD download caching to speed up subsequent builds (may introduce ghost files into the images). |
-| `--disable-docker-cache`       | Disables the Docker build cache, forcing a fresh build of all layers.                                        |
+| `--disable-docker-cache`  | Disables the Docker build cache, forcing a fresh build of all layers.                                        |
+| `--progress-plain`        | Enables complete, noninteractive Docker build progress for troubleshooting.                                  |
 | `--skip-pull`             | Skips pulling the latest base images from the Docker registry.                                               |
 | `--skip-tests`            | Skips running any tests defined in the build process.                                                        |
 | `--skip-push`             | Skips pushing the built Docker images to the registry.                                                       |
 
 ### Flow Options
 
-| Argument      | Description                                                    |
-| :------------ | :------------------------------------------------------------- |
-| `--fast-fail` | Immediately stops the entire build process on the first error. |
-| `--skip-base` | Skips building 'base' images, but builds all 'derived' images. |
+| Argument      | Description                                                                                  |
+| :------------ | :------------------------------------------------------------------------------------------- |
+| `--fail-fast` | Stops scheduling additional builds after the first repository build failure.                 |
+| `--skip-base` | Skips building 'base' images, but builds all 'derived' images.                               |
 
 ## `offline.sh`
 

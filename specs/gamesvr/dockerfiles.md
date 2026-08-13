@@ -28,6 +28,16 @@ The requirements in this section apply only to the final build stage. Earlier st
 
 * No unused ARGs are allowed.
 * Build args should be UPPERCASE with underscores, and should be descriptive of their purpose.
+* Every final image must declare `BUILD_DATE`, `BUILD_NODE`, and `GIT_REVISION` with a default value of `unspecified`.
+* Every build system, including repository build scripts and continuous-integration workflows, must pass non-default
+  values for `BUILD_DATE`, `BUILD_NODE`, and `GIT_REVISION` to every final-image build. `BUILD_DATE` must be an RFC 3339
+  UTC date-time associated with the image build; `BUILD_NODE` must identify the system or runner building the image;
+  and `GIT_REVISION` must identify the repository commit from which the image is built. Repository build scripts must
+  generate `BUILD_DATE` when the Docker build command runs and obtain `BUILD_NODE` from the build host's hostname.
+* GitHub Actions image-build workflows must pass all three values inline in the Docker build action's `build-args`
+  input and must not use a separate metadata-generation step. `BUILD_DATE` must use `github.event.head_commit.timestamp`
+  with `github.event.pull_request.updated_at` and `github.event.repository.updated_at` as ordered fallbacks;
+  `BUILD_NODE` must use `runner.name`; and `GIT_REVISION` must use `github.sha`.
 * Build arguments may be placed:
   * Before any `FROM` instructions, for build arguments that are used in the `FROM`
     instruction(s).
@@ -59,7 +69,7 @@ The requirements in this section apply only to the final build stage. Earlier st
   * `maintainer` - The maintainer of the image (by default `Laclede's LAN <contact@lacledeslan.com>`).
   * `org.opencontainers.image.created` - The time the image was created in RFC 3339 formatted date-time string
     (e.g., YYYY-MM-DDTHH:MM:SSZ).
-    * ARG `BUILD_DATE` should be used to pass this value with a default value of `unspecified`.
+    * ARG `BUILD_DATE` must be used to pass this value with a default value of `unspecified`.
   * `org.opencontainers.image.description` - A description of the image (e.g. `<gamename> Dedicated Server`).
   * `org.opencontainers.image.revision` - The revision of the image (e.g. `git rev-parse HEAD`).
     * ARG `GIT_REVISION` should be used to pass the git revision to the Dockerfile (default `unspecified`):

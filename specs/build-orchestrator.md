@@ -7,11 +7,16 @@ must comply with the [Repository Build Script Specs](gamesvr/build-scripts.md).
 ## General Requirements
 
 * The orchestrator must be executable, use Bash, and enable `errexit`, `nounset`, and `pipefail` behavior.
+* Every Bash function must comply with the shared
+  [Function Documentation](shell-scripts.md#function-documentation) requirements.
 * The orchestrator must resolve paths relative to its own location and must not depend on the caller's current working
   directory.
 * The orchestrator must pass `shellcheck` validation before being committed.
 * The orchestrator must validate required commands and access to the Docker daemon before starting a build.
 * The orchestrator must reject unknown options, print the unknown option to standard error, and exit nonzero.
+* The orchestrator must parse options using the shared
+  [Command-Line Parsing Pattern](gamesvr/build-scripts.md#command-line-parsing-pattern), with separate categories for
+  options it consumes, build targets it selects, and common build options it passes to repository build scripts.
 * Options must be order-independent and may be combined unless a combination is explicitly prohibited below.
 * The orchestrator must exit zero only when every requested operation succeeds. A failed preflight, pull, repository
   build, test, push, or required cleanup operation must produce a nonzero exit status.
@@ -108,6 +113,9 @@ options, and the orchestrator must not pass them through to repository build scr
 * The orchestrator must capture and retain the complete newline-delimited image-tag list written to standard output by
   every repository build script it invokes, regardless of whether `--delete-built-image` was specified. It must
   preserve the repository build script's exit status separately from the captured output.
+* Repository build-script standard error must remain part of the human-readable orchestration log and must not be
+  included in the captured image-tag list. The orchestrator must not reproduce the captured machine-readable tag list
+  in its human-readable output.
 * The captured list is the authoritative set of image tags produced by that repository build-script invocation. The
   orchestrator must not infer cleanup tags from project names, configured suffixes, or repository relationships.
 * When `--delete-built-image` is specified, the orchestrator must delete every tag in each captured list. When the

@@ -5,6 +5,8 @@ Test scripts validate locally built game-server Docker images independently of t
 ## General Requirements
 
 * Test scripts must be executable Bash scripts located in the repository root.
+* Every Bash function must comply with the shared
+  [Function Documentation](../shell-scripts.md#function-documentation) requirements.
 * A first-level project's test script must be named `test-gamesvr-<game_name>.sh`.
 * A second-level project's test script must be named `test-gamesvr-<game_name>-<scope>.sh`.
 * Scripts must resolve paths relative to the script's location and must not depend on the caller's current working

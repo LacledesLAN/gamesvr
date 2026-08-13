@@ -18,6 +18,7 @@ require_executable "${SCRIPT_DIR}/reindex-7daystodie.sh"
 require_executable "${SCRIPT_DIR}/reindex-blackmesa.sh"
 "${SCRIPT_DIR}/reindex-blackmesa.sh"
 
+git_clone "https://github.com/LacledesLAN/gamesvr-colonysurvival" "${REPOS_DIR}/gameservers/gamesvr-colonysurvival"
 git_clone "https://github.com/LacledesLAN/gamesvr-cs2d" "${REPOS_DIR}/gameservers/gamesvr-cs2d"
 git_clone "https://github.com/LacledesLAN/gamesvr-cs2d-freeplay" "${REPOS_DIR}/gameservers/gamesvr-cs2d-freeplay"
 git_clone "https://github.com/LacledesLAN/gamesvr-cssource" "${REPOS_DIR}/gameservers/gamesvr-cssource"
