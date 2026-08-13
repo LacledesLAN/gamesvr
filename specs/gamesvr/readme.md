@@ -37,6 +37,7 @@ If a game server is not built in the cloud (e.g. GitHub Actions), it must includ
 locally to build, test, and push the Docker image to the cloud. Game server repos that are built in the cloud may
 optionally include a build script for local use, following the same conventions.
 
-The top-level orchestration script is part of the `gamesvr` project itself and must be named `build.sh`. Build scripts
-inside active game-server repositories must follow the naming requirements under [Game Server 'Levels'](#game-server-levels).
-All included build scripts must comply with the [Build Script Specs](build-scripts.md).
+The top-level orchestration script is part of the `gamesvr` project itself, must be named `build.sh`, and must comply
+with the [Build Orchestrator Specs](../build-orchestrator.md). Build scripts inside active game-server repositories must
+follow the naming requirements under [Game Server 'Levels'](#game-server-levels) and comply with the
+[Repository Build Script Specs](build-scripts.md).

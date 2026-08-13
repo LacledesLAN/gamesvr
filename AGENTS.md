@@ -13,5 +13,6 @@ server repository.
 * [Specs for active `gamesvr` projects](specs/gamesvr/readme.md) must be followed by every active game server repository.
 * [Dockerfile Specs for active `gamesvr` projects](specs/gamesvr/dockerfiles.md) must be followed by all Dockerfiles in
   active game server repositories.
+* [Build Orchestrator Specs](specs/build-orchestrator.md) must be followed by the root `build.sh` orchestration script.
 
 ## Archived
