@@ -6,11 +6,12 @@ This `gamesvr` repo is a collection of tools to help build, test, maintain, back
 
 ## Active `gamesvr` repos
 
-Active game server repos are manged in the `/repos/gamesvr` folder, and are expected to be maintained and updated as
-needed. These repos must follow the specifications outlined in the `specs/gamesvr` folder.
+Active game server repos are managed in the `repos/gameservers` folder and are expected to be maintained and updated as
+needed. The canonical specifications for these repositories must live in `specs/gamesvr`, not in an individual game
+server repository.
 
-* [Specs for active `gamesvr` projects](specs/gamesvr/readme.md) should be followed for all active `gamesvr` repos.
-* [Dockerfile Specs for active `gamesvr` projects](specs/gamesvr/dockerfiles.md) should be followed for all Dockerfiles
-  in active `gamesvr` repos.
+* [Specs for active `gamesvr` projects](specs/gamesvr/readme.md) must be followed by every active game server repository.
+* [Dockerfile Specs for active `gamesvr` projects](specs/gamesvr/dockerfiles.md) must be followed by all Dockerfiles in
+  active game server repositories.
 
 ## Archived

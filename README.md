@@ -5,6 +5,12 @@ This repo contains scripts and assets for working with Laclede's LAN game server
 * It maintains a list of all Laclede's LAN game server repos, and can fetch them to a local machine.
 * It can build Laclede's LAN game servers that are not built via GitHub actions.
 
+## Repository Layout
+
+Shared specifications for all active game server repositories live in [`specs/gamesvr`](specs/gamesvr/readme.md).
+Add and maintain game server specifications there, not in an individual repository under `repos/gameservers`.
+Active game server repositories are checked out under `repos/gameservers` and must follow those specifications.
+
 ## VS Code Workspace
 
 Open `gamesvr.code-workspace` in VS Code to work with this project and all repositories under
@@ -43,7 +49,7 @@ chosen.
 | `--delta`                 | Build 'base' images, using delta layers, when possible. Use when registry bandwidth is a concern.            |
 | `--delete-built-image`    | Deletes the Docker image after a successful build to save local disk space when pushing to registries.       |
 | `--enable-steamcmd-cache` | Enables SteamCMD download caching to speed up subsequent builds (may introduce ghost files into the images). |
-| `--no-docker-cache`       | Disables the Docker build cache, forcing a fresh build of all layers.                                        |
+| `--disable-docker-cache`       | Disables the Docker build cache, forcing a fresh build of all layers.                                        |
 | `--skip-pull`             | Skips pulling the latest base images from the Docker registry.                                               |
 | `--skip-tests`            | Skips running any tests defined in the build process.                                                        |
 | `--skip-push`             | Skips pushing the built Docker images to the registry.                                                       |

@@ -18,37 +18,40 @@ LL_GAMESVR_BLD_START_TIME=$(date +%s)
 ## Options
 ####################################################################################################
 
-build_targets=()
-flow_options=()
 build_options=()
+orchestrator_build_targets=()
+orchestrator_options=()
 
-# Using simple tracking arrays for cleanliness
-completed_builds=()
-failed_builds=()
-aborted_builds=()
+# Track the results of each build for reporting at the end of the script
+builds_aborted=()
+builds_completed=()
+builds_failed=()
 
 # Parse command line options
 while [ "$#" -gt 0 ]
 do
     case "$1" in
+		# Orchestrator options.
+		--delete-built-image)        orchestrator_options+=('delete-built-image') ;;
+        --fast-fail)                 orchestrator_options+=('fast-fail') ;;
+        --no-base|--skip-base)       orchestrator_options+=('skip-base') ;;
+
+        # Build targets; exclusive to orchestrator. Aliases map cleanly to their core folder names
+        --7days|--7daystodie)        orchestrator_build_targets+=('7daystodie') ;;
+        --blackmesa)                 orchestrator_build_targets+=('blackmesa') ;;
+        --tf2)                       orchestrator_build_targets+=('tf2') ;;
+        --tf2c|--tf2classified)      orchestrator_build_targets+=('tf2classified') ;;
+
 		# Build options; passed down to child scripts for Docker build customization
-        -d|--delta)                  build_options+=("--delta") ;;
-        --delete-built-image)        build_options+=("--delete-built-image") ;;
+        --delta)                     build_options+=("--delta") ;;
         --enable-steamcmd-cache)     build_options+=("--enable-steamcmd-cache") ;;
-        --no-docker-cache)           build_options+=("--no-docker-cache") ;;
+        --disable-docker-cache)      build_options+=("--disable-docker-cache") ;;
         --skip-pull)                 build_options+=("--skip-pull") ;;
-        --skip-tests)                build_options+=("--skip-tests") ;;
         --skip-push)                 build_options+=("--skip-push") ;;
+		--skip-tests)                build_options+=("--skip-tests") ;;
 
-        # Flow options
-        --fast-fail)                 flow_options+=('fast-fail') ;;
-        --no-base|--skip-base)       flow_options+=('skip-base') ;;
 
-        # Build targets aliases map cleanly to their core folder names
-        --7days|--7daystodie)        build_targets+=('7daystodie') ;;
-        --blackmesa)                 build_targets+=('blackmesa') ;;
-        --tf2)                       build_targets+=('tf2') ;;
-        --tf2c|--tf2classified)      build_targets+=('tf2classified') ;;
+		# Catch and exit if any unknown options are provided
         *)
             echo "Error: unknown option '${1}'. Exiting." >&2
             exit 12
@@ -61,13 +64,13 @@ done
 ## Helper Functions
 ####################################################################################################
 
-# USAGE: has_flow_option "option_name"
-# PURPOSE: Checks if a specific flow control flag exists in the global 'flow_options' array.
+# USAGE: has_orchestrator_option "option_name"
+# PURPOSE: Checks if a specific orchestration flag exists in the global 'orchestrator_options' array.
 # ARGS: $1 = The string option to search for (e.g., 'fast-fail')
 # RETURNS: 0 if option is found, 1 otherwise
-function has_flow_option {
+function has_orchestrator_option {
     local element
-    for element in "${flow_options[@]}"; do
+    for element in "${orchestrator_options[@]}"; do
         [[ "$element" == "$1" ]] && return 0
     done
     return 1
@@ -86,26 +89,26 @@ function has_build_option {
 }
 
 # USAGE: builds_failed_includes "image_name"
-# PURPOSE: Determines if a given image build has failed by checking the global 'failed_builds' array.
+# PURPOSE: Determines if a given image build has failed by checking the global 'builds_failed' array.
 # ARGS: $1 = Name of the base image to check
 # RETURNS: 0 if the image is in the failure list, 1 otherwise
 function builds_failed_includes {
     local element
-    for element in "${failed_builds[@]}"; do
+    for element in "${builds_failed[@]}"; do
         [[ "$element" == "$1" ]] && return 0
     done
     return 1
 }
 
-# USAGE: build_targets_include "game_shortname"
+# USAGE: orchestrator_build_targets_include "game_shortname"
 # PURPOSE: Determines if a specific game target should be built. If no specific targets
 #          were requested via command line arguments, it assumes all targets are included.
 # ARGS: $1 = Internal shortname of the game target (e.g., 'tf2')
 # RETURNS: 0 if target should be built (or array is empty), 1 if target should be skipped
-function build_targets_include {
-    [[ ${#build_targets[@]} -eq 0 ]] && return 0
+function orchestrator_build_targets_include {
+    [[ ${#orchestrator_build_targets[@]} -eq 0 ]] && return 0
     local element
-    for element in "${build_targets[@]}"; do
+    for element in "${orchestrator_build_targets[@]}"; do
         [[ "$element" == "$1" ]] && return 0
     done
     return 1
@@ -143,12 +146,12 @@ function report_build {
     local exit_code="$2"
 
     if [ "$exit_code" -eq 0 ]; then
-        completed_builds+=("$target")
-    elif has_flow_option 'fast-fail'; then
+        builds_completed+=("$target")
+    elif has_orchestrator_option 'fast-fail'; then
         echo >&2 "Build '$target' failed (Exit: $exit_code). Fast-failing script."
         exit 1
     else
-        failed_builds+=("$target")
+        builds_failed+=("$target")
     fi
 }
 
@@ -172,7 +175,7 @@ fi
 
 trap 'trap " " SIGINT SIGTERM SIGHUP; kill 0; wait; sigterm_handler' SIGINT SIGTERM SIGHUP
 
-if has_flow_option 'skip-base'; then
+if has_orchestrator_option 'skip-base'; then
     echo -e "Skipping base image builds.\n"
 fi
 
@@ -181,10 +184,10 @@ fi
 ####################################################################################################
 
 # Target layout printing
-if [ ${#build_targets[@]} -eq 0 ]; then
+if [ ${#orchestrator_build_targets[@]} -eq 0 ]; then
     echo "Build target: ALL"
 else
-    echo "Build targets: $(join_by ', ' "${build_targets[@]}")"
+    echo "Build targets: $(join_by ', ' "${orchestrator_build_targets[@]}")"
 fi
 
 if ! has_build_option '--skip-pull'; then
@@ -207,7 +210,7 @@ function execute_build_pipeline() {
     shift 2
     local derivatives=("$@")
 
-    ! build_targets_include "$game_id" && return 0
+    ! orchestrator_build_targets_include "$game_id" && return 0
 
     ui_header1 "$ui_name"
     ui_header2 "Fetching LL $ui_name repos"
@@ -217,7 +220,7 @@ function execute_build_pipeline() {
     local base_image="gamesvr-${game_id}"
 
     # 1. Base Build
-    if ! has_flow_option 'skip-base'; then
+    if ! has_orchestrator_option 'skip-base'; then
         ui_header2 "Build $base_image"
 
         # Note the '|| true' or explicit assignments bypass 'set -e' crashes, allowing report_build to catch it
@@ -237,7 +240,7 @@ function execute_build_pipeline() {
         if builds_failed_includes "$base_image"; then
             ui_header2 "$deriv_image"
             echo -e "Skipped (Base image failed).\n"
-            aborted_builds+=("$deriv_image")
+            builds_aborted+=("$deriv_image")
         else
             ui_header2 "Build $deriv_image"
             local status=0
@@ -271,13 +274,13 @@ ui_header1 "Results for \"$LL_GAMESVR_BLD_COMMAND\""
 echo -e "\nScript version: $(git -C "$GAMESVR_ROOT" rev-parse --short HEAD)"
 echo -e "Script completed in $(($(date +%s) - "$LL_GAMESVR_BLD_START_TIME")) seconds.\n"
 
-[[ ${#completed_builds[@]} -gt 0 ]] && echo -e "Successful builds: $(join_by ', ' "${completed_builds[@]}")"
-[[ ${#failed_builds[@]} -gt 0 ]]    && echo -e "Failed builds:     $(join_by ', ' "${failed_builds[@]}")"
-[[ ${#aborted_builds[@]} -gt 0 ]]   && echo -e "Aborted builds:    $(join_by ', ' "${aborted_builds[@]}")"
+[[ ${#builds_completed[@]} -gt 0 ]] && echo -e "Successful builds: $(join_by ', ' "${builds_completed[@]}")"
+[[ ${#builds_failed[@]} -gt 0 ]]    && echo -e "Failed builds:     $(join_by ', ' "${builds_failed[@]}")"
+[[ ${#builds_aborted[@]} -gt 0 ]]   && echo -e "Aborted builds:    $(join_by ', ' "${builds_aborted[@]}")"
 
 echo -e "\n\n"
 
-if [[ ${#failed_builds[@]} -gt 0 ]] || [[ ${#aborted_builds[@]} -gt 0 ]]; then
+if [[ ${#builds_failed[@]} -gt 0 ]] || [[ ${#builds_aborted[@]} -gt 0 ]]; then
     exit 1
 else
     exit 0

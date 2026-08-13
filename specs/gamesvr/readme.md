@@ -1,5 +1,9 @@
 # Specs for active `gamesvr` projects
 
+This directory is the canonical location for specifications shared by active game server repositories. Add and maintain
+shared game server requirements in `specs/gamesvr`, rather than duplicating them in repositories under
+`repos/gameservers`.
+
 Game server repositories contain the necessary files to build, test, and publish a game server. These repos:
 
 * must start with `gamesvr-` in the repo name.

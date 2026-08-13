@@ -19,16 +19,22 @@ the images defined by its own repository.
 * Options must be order-independent and may be combined unless a combination is explicitly prohibited below.
 * Scripts must exit zero only when every requested operation succeeds. A failed preflight, pull, build, test, push, or
   required cleanup operation must produce a nonzero exit status.
+* At the beginning of a repository build script, before producing any output or invoking any command that may produce
+  output, the script must save its original standard output and redirect standard output to standard error. This makes
+  all lifecycle output, diagnostics, and subprocess output visible on standard error by default.
+* Before exiting, a repository build script must restore its original standard output and write only the image-tag list
+  defined under [Repository Build-Script Output](#repository-build-script-output) to standard output.
 
 ### Repository Lifecycle
 
-* A repository build script must build, tag, test, push, and delete only images defined by its hosting repository. It may
-  consume a parent or other dependency image, but it must not manage that dependency image's lifecycle.
+* A repository build script must build, tag, test, and push only images defined by its hosting repository. It may
+  consume a parent or other dependency image, but it must not manage that dependency image's lifecycle or delete any
+  built image.
 * A repository build script must not select other projects, invoke another repository's build script, or coordinate
   builds across repositories. Cross-repository selection, dependency ordering, and lifecycle coordination belong only
   to the orchestrator.
 * Unless an option explicitly changes its behavior, a repository build script must run its lifecycle in this order:
-  preflight checks, pull, build and local tag creation, test, push, and cleanup.
+  preflight checks, pull, build and local tag creation, test, and push.
 * During the push step, the script must push each configured publishing-qualified tag only after the corresponding
   unqualified local tag satisfies the publishing preconditions below.
 * A repository build script must complete its project lifecycle before returning control to its caller.
@@ -41,7 +47,7 @@ the images defined by its own repository.
 * The orchestrator must invoke each selected repository build script as a complete project lifecycle. It must not
   combine the build, test, or push steps of multiple repository build scripts into shared phases.
 * The failure of one project must affect scheduling only as defined under
-  [Failure Handling](#failure-handling) and [`--fast-fail`](#--fast-fail).
+  [Failure Handling](#failure-handling) and [`--fail-fast`](#--fail-fast).
 
 ## Image Names and Publishing
 
@@ -70,16 +76,15 @@ the images defined by its own repository.
   a fallback as defined under [`--no-base`, `--skip-base`](#--no-base---skip-base).
 * Pushes must use the publishing-qualified tags. Creating a publishing-qualified tag locally does not satisfy or bypass
   the publishing preconditions.
-* All locally created tags must remain after successful or failed testing and publishing unless
-  `--delete-built-image` is specified.
+* All locally created tags must remain after successful or failed testing and publishing. Only the orchestrator may
+  remove built image tags when its `--delete-built-image` option is specified.
 
 ## Common Options
 
 The root `./build.sh` orchestration script and every repository build script it may invoke, such as
 `build-gamesvr-blackmesa.sh`, must accept every option in this section. The root orchestration script must pass every
 received common option through unchanged to each invoked repository build script, including an option that does not
-apply to that project. The only exception is `--delete-built-image`: when coordinating multiple builds, the orchestrator
-must withhold it from repository build scripts and perform the required image cleanup itself in dependency-safe order.
+apply to that project.
 
 ### Inapplicable Options
 
@@ -88,33 +93,11 @@ or has no applicable operation. In that case, the script must print a status mes
 states that it has no effect for that project or invocation, and continues normally. Option-specific behavior required
 below, such as performing a full build when `--delta` is unsupported, still applies.
 
-### `-d`, `--delta`
+### `--delta`
 
-* `-d` and `--delta` must be equivalent.
 * For projects that support delta updates, this option must build only the update layer or otherwise avoid rebuilding
   unchanged game-server content.
 * For projects that cannot safely perform a delta update, the normal no-effect behavior is a full build.
-
-### `--delete-built-image`
-
-* Deletes gameserver Docker images, after being processed. The intent is to save hard drive space on the building
-  machine, while still keeping all build functionality intact.
-* A repository build script running independently must remove every unqualified and publishing-qualified local image
-  tag it produced only after its requested tests and pushes finish.
-* Cleanup of all tags created by the invocation must also be attempted when the script exits because a build, test, or
-  push failed.
-* Failure to remove an already absent image must not hide the original build, test, or push result.
-* Combining this option with `--skip-push` is permitted as a build-validation workflow. Before building, the complete
-  invocation must print a prominent warning that all requested builds and tests will run but no built image artifact
-  will remain after successful cleanup.
-* The orchestrator must retain each built image until every requested dependent build has been processed. A
-  dependent build is processed when it succeeds, fails, or is explicitly recorded as skipped.
-* At the end of each build step, the orchestrator may remove images for which no requested dependent build remains
-  unprocessed. It must remove all local tags for child images before all local tags for their parent images and remove
-  all remaining image tags produced by the invocation before the invocation finishes.
-* For example, when `gamesvr-blackmesa` and `gamesvr-blackmesa-freeplay` are requested together, the orchestrator must
-  not remove `gamesvr-blackmesa` until the `gamesvr-blackmesa-freeplay` build has succeeded, failed, or been recorded as
-  skipped.
 
 ### `--enable-steamcmd-cache`
 
@@ -124,7 +107,7 @@ below, such as performing a full build when `--delta` is unsupported, still appl
 * Enabling this cache must not change the final image contents except for the game-server files obtained through
   SteamCMD.
 
-### `--no-docker-cache`
+### `--disable-docker-cache`
 
 * The script must pass `--no-cache` to every Docker build performed by that invocation.
 * This option controls Docker layer-cache matching only; it must not imply `--skip-pull` or disable the SteamCMD cache.
@@ -135,6 +118,7 @@ below, such as performing a full build when `--delta` is unsupported, still appl
   troubleshooting.
 * The script must pass `--progress=plain` to every Docker build performed by that invocation, including builds executed
   through `docker buildx build`.
+* The script must pass `--no-progress` to git commands (if `--quiet` is already being passed this is not required).
 * The script must not filter, truncate, collapse, or otherwise suppress Docker build output when this option is enabled.
 * This option must not change cache, pull, test, push, tagging, or cleanup behavior.
 
@@ -145,7 +129,7 @@ below, such as performing a full build when `--delta` is unsupported, still appl
   Docker builder.
 * Images already available to the selected Docker builder must not be proactively refreshed or pulled solely because a
   newer remote image may exist.
-* This option must not imply `--no-docker-cache`.
+* This option must not imply `--disable-docker-cache`.
 
 ### `--skip-tests`
 
@@ -160,13 +144,44 @@ below, such as performing a full build when `--delta` is unsupported, still appl
   and publishing-qualified local tag during the build step.
 * This option affects only publishing operations. Unless `--skip-tests` is also present, the script must still run all
   tests against every built, unqualified local image tag configured for the invocation.
-* All locally created image tags must remain available unless `--delete-built-image` is also present.
+* All locally created image tags must remain available after a repository build script exits.
 
 ## Orchestration Options
 
 The options in this section apply only to the root `./build.sh` orchestrator in the `gamesvr` repository. Repository
 build scripts must not accept these options, and the orchestrator must not pass them through to repository build
 scripts.
+
+### `--delete-built-image`
+
+* Deletes gameserver Docker images after they have been processed. The intent is to save hard drive space on the
+  building machine while retaining all build, test, and publishing behavior.
+* This option is accepted only by the orchestrator. Repository build scripts must reject it as an unknown option, and
+  the orchestrator must not pass it to repository build scripts.
+* The orchestrator must capture and retain the complete newline-delimited image-tag list written to standard output by
+  every repository build script it invokes, regardless of whether `--delete-built-image` was specified. It must
+  preserve the repository build script's exit status separately from the captured output.
+* The captured list is the authoritative set of image tags produced by that repository build-script invocation. The
+  orchestrator must not infer cleanup tags from project names, configured suffixes, or repository relationships.
+* When `--delete-built-image` is specified, the orchestrator must delete every tag in each captured list. When the
+  option is not specified, it must not delete any captured tag.
+* Cleanup of all reported tags must also be attempted when a repository build script exits because a build, test, or
+  push failed. Failure to remove an already absent image must not hide the original build, test, or push result.
+* Combining this option with `--skip-push` is permitted as a build-validation workflow. Before building, the complete
+  invocation must print a prominent warning that all requested builds and tests will run but no built image artifact
+  will remain after successful cleanup.
+* The orchestrator must retain each built image until every requested direct or transitive dependent has been
+  processed. A dependent is processed when its repository build script succeeds or fails, or when the orchestrator
+  explicitly records it as skipped.
+* Cleanup must occur in reverse dependency order. Before deleting any tag returned by a parent repository build script,
+  the orchestrator must finish processing every requested child and transitive descendant and must finish deleting all
+  tags returned by those descendants. Tags returned for a project may be deleted only when no requested dependent
+  remains unprocessed or has captured tags awaiting deletion.
+* The orchestrator must remove all remaining captured tags before the invocation finishes. A tag must not be deleted
+  merely because a repository build script has returned if another requested build may still use that image.
+* For example, when `gamesvr-hl2dm` and `gamesvr-hl2dm-freeplay` are requested together, the orchestrator must build
+  `gamesvr-hl2dm-freeplay` before deleting any tag returned by `gamesvr-hl2dm`. It must delete all tags returned by
+  `gamesvr-hl2dm-freeplay` before deleting the tags returned by `gamesvr-hl2dm`.
 
 ### Build Target Selection
 
@@ -192,7 +207,7 @@ scripts.
 
 ### Failure Handling
 
-* Unless `--fast-fail` is enabled, the orchestrator must continue running every requested build that can still succeed
+* Unless `--fail-fast` is enabled, the orchestrator must continue running every requested build that can still succeed
   after a failure. One failed build must not prevent independent first-level projects or their viable second-level
   projects from being attempted.
 * A first-level project is a base game-server project, such as `gamesvr-name`. A second-level project is a project built
@@ -200,17 +215,19 @@ scripts.
   [Game Server Levels](readme.md#game-server-levels).
 * If a first-level build fails, the orchestrator must not invoke or otherwise attempt to build any second-level project
   that depends on it. Each affected second-level project must be reported as skipped in the final summary.
-* Dependency skipping is mandatory regardless of whether `--fast-fail` is enabled. The final summary must report each
+* Dependency skipping is mandatory regardless of whether `--fail-fast` is enabled. The final summary must report each
   affected project as skipped and identify the failed dependency as the reason.
-* Unless `--fast-fail` is enabled, a failure in one build target must not prevent viable projects in another selected
+* Unless `--fail-fast` is enabled, a failure in one build target must not prevent viable projects in another selected
   build target from being processed.
 
-### `--fast-fail`
+### `--fail-fast`
 
+* This option is accepted only by the orchestrator. Repository build scripts must reject it as an unknown option, and
+  the orchestrator must not pass it to repository build scripts.
 * The orchestrator must stop scheduling additional builds immediately after the first failed build.
 * The orchestrator must preserve the failing build's result in its final output and exit nonzero.
-* Every selected project not attempted because of `--fast-fail` must be reported as skipped in the final summary, with
-  `--fast-fail` identified as the reason.
+* Every selected project not attempted because of `--fail-fast` must be reported as skipped in the final summary, with
+  `--fail-fast` identified as the reason.
 * Without this option, the orchestrator must follow the continuation and dependency-skipping requirements above so the
   final report includes all attempted failures.
 
@@ -237,17 +254,32 @@ scripts.
 
 The complete output of an orchestrator invocation must be a well-formed Markdown document that can be copied directly
 into a Markdown file, GitHub issue, pull request, or discussion and rendered without modification. Repository build
-scripts must emit well-formed Markdown fragments that the orchestrator can include in that document without
-modification.
+scripts must emit their human-readable, well-formed Markdown fragments on standard error so that standard output is
+reserved for machine-readable image tags. The orchestrator may combine those fragments into its Markdown document.
+
+### Repository Build-Script Output
+
+* A repository build script must write to standard output every local Docker image tag successfully created by the
+  invocation, including every unqualified tag and every publishing-qualified tag.
+* Each tag must be written exactly once on its own line, with no bullets, headings, quoting, blank lines, or other
+  formatting. A script that creates no image tags must produce no standard output.
+* The complete tag list must be emitted immediately before the script exits, after restoring the original standard
+  output. This requirement applies to both successful and failed invocations; a failed invocation must report any tags
+  it successfully created before the failure.
+* Image tags are the only content a repository build script may write to standard output. All script-authored status,
+  warning, error, and Markdown output, and all output from commands, tests, Docker, and other subprocesses, must be
+  written to standard error.
+* The newline-delimited format must allow a caller to capture the complete tag list with command substitution or an
+  equivalent standard-output capture mechanism while lifecycle output continues to be displayed on standard error.
 
 ### Document Structure
 
 * The first nonblank output line from the orchestrator must be a single level-one heading (`#`) that identifies
   the build invocation. The complete orchestration output must contain exactly one level-one heading.
 * Only the root `./build.sh` orchestrator in the `gamesvr` repository may emit a level-one heading.
-* A repository build script must not emit a level-one heading. Its first nonblank output line must be a level-two
-  heading (`##`) that identifies the project lifecycle, and its subsequent sections must use level-three or deeper
-  headings in a logical hierarchy without skipping heading levels.
+* A repository build script must not emit a level-one heading in its human-readable standard-error output. Its first
+  nonblank human-readable line must be a level-two heading (`##`) that identifies the project lifecycle, and its
+  subsequent sections must use level-three or deeper headings in a logical hierarchy without skipping heading levels.
 * The orchestrator must include each repository build script's Markdown fragment without placing the fragment inside a
   fenced code block.
 * Headings, lists, paragraphs, links, inline code, and fenced code blocks must follow GitHub Flavored Markdown syntax.
@@ -261,7 +293,9 @@ modification.
 * The opening and closing fences must each appear on their own line and must use matching backtick delimiters of at
   least three backticks. A fence longer than any backtick sequence in the captured output must be used when necessary.
 * A suitable info string, such as `console` or `text`, should follow the opening fence when it improves rendering.
-* Both standard output and standard error from a command must remain inside that command's fenced code block.
+* Both output streams from a command must remain inside that command's fenced code block. In a repository build script,
+  the script-level redirection must send the complete fenced block to standard error; command output must never bypass
+  that redirection and reach the repository build script's standard output.
 * Every opened code block must be closed, including when the command fails or the script receives a termination signal.
 * Script-authored status text, headings, summaries, warnings, and errors must not be placed inside a code block unless
   they are part of captured command output.
@@ -272,9 +306,9 @@ modification.
 * The orchestrator must provide a final summary containing every selected project exactly once. The summary must
   identify each project's build target and report it as built successfully, failed, or skipped.
 * Every skipped project must include a reason, such as exclusion by `--no-base` or `--skip-base`, a failed dependency,
-  or scheduling stopped by `--fast-fail`.
+  or scheduling stopped by `--fail-fast`.
 * Status and summary output should use Markdown lists or tables when reporting multiple items.
 * Error and warning messages must identify the affected operation or option, use valid Markdown, and be written to
   standard error.
-* Writing warnings or errors to standard error must not break the Markdown structure when standard output and standard
-  error are combined into one log.
+* Writing warnings or errors to standard error must not break the Markdown structure when output streams are combined
+  into one human-readable log. Machine-readable repository image-tag output must remain separately capturable.
